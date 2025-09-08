@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:cloud_firestore_odm/annotation.dart';
@@ -20,7 +20,7 @@ import 'templates/query_document_snapshot.dart';
 import 'templates/query_reference.dart';
 import 'templates/query_snapshot.dart';
 
-const namedQueryChecker = TypeChecker.fromRuntime(NamedQuery);
+const namedQueryChecker = TypeChecker.typeNamed(NamedQuery);
 
 class QueryingField {
   QueryingField(
@@ -63,21 +63,29 @@ class GlobalData {
 }
 
 @immutable
-class CollectionGenerator
-    extends ParserGenerator<GlobalData, CollectionGraph, Collection<Object?>> {
+class CollectionGenerator extends ParserGenerator<GlobalData, CollectionGraph, Collection<Object?>> {
   @override
-  GlobalData parseGlobalData(LibraryElement library) {
+  GlobalData parseGlobalData(LibraryElement2 library) {
     final globalData = GlobalData();
 
-    for (final element in library.topLevelElements) {
+    // Process both top-level variables and classes
+    final allElements = <Element2>[];
+    allElements.addAll(library.topLevelVariables);
+
+    // Also check class declarations for annotations
+    for (final classElement in library.classes) {
+      if (collectionChecker.hasAnnotationOf(classElement)) {
+        allElements.add(classElement);
+      }
+    }
+
+    for (final element in allElements) {
       for (final queryAnnotation in namedQueryChecker.annotationsOf(element)) {
         final queryData = NamedQueryData.fromAnnotation(queryAnnotation);
 
-        final hasCollectionWithMatchingModelType =
-            collectionChecker.annotationsOf(element).any(
+        final hasCollectionWithMatchingModelType = collectionChecker.annotationsOf(element).any(
           (annotation) {
-            final collectionType =
-                CollectionData.modelTypeOfAnnotation(annotation);
+            final collectionType = CollectionData.modelTypeOfAnnotation(annotation);
             return collectionType == queryData.type;
           },
         );
@@ -101,9 +109,11 @@ class CollectionGenerator
   Future<CollectionGraph> parseElement(
     BuildStep buildStep,
     GlobalData globalData,
-    Element element,
+    Element2 element,
   ) async {
-    final library = await buildStep.inputLibrary;
+    final library = await buildStep.resolver.libraryFor(
+      await buildStep.resolver.assetIdForElement(element),
+    );
     final collectionAnnotations = collectionChecker.annotationsOf(element).map(
       (annotation) {
         return CollectionData.fromAnnotation(

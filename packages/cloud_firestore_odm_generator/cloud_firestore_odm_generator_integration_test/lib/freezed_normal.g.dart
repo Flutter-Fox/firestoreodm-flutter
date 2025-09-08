@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'freezed.dart';
+part of 'freezed_normal.dart';
 
 // **************************************************************************
 // CollectionGenerator
@@ -35,7 +35,7 @@ abstract class PersonCollectionReference
   }
 
   static Map<String, Object?> toFirestore(Person value, SetOptions? options) {
-    return value.toJson();
+    return _$PersonToJson(value);
   }
 
   @override
@@ -233,7 +233,7 @@ class _$PersonDocumentReference
     FieldValue? lastNameFieldValue,
   }) async {
     final json = {
-      ...model.toJson(),
+      ..._$PersonToJson(model),
       if (firstNameFieldValue != null)
         _$PersonFieldMap['firstName']!: firstNameFieldValue,
 
@@ -256,7 +256,7 @@ class _$PersonDocumentReference
     FieldValue? lastNameFieldValue,
   }) {
     final json = {
-      ...model.toJson(),
+      ..._$PersonToJson(model),
       if (firstNameFieldValue != null)
         _$PersonFieldMap['firstName']!: firstNameFieldValue,
 
@@ -275,7 +275,7 @@ class _$PersonDocumentReference
     FieldValue? lastNameFieldValue,
   }) {
     final json = {
-      ...model.toJson(),
+      ..._$PersonToJson(model),
       if (firstNameFieldValue != null)
         _$PersonFieldMap['firstName']!: firstNameFieldValue,
 
@@ -1151,7 +1151,7 @@ abstract class PublicRedirectedCollectionReference
     DocumentSnapshot<Map<String, Object?>> snapshot,
     SnapshotOptions? options,
   ) {
-    return _$PublicRedirected2FromJson(snapshot.data()!);
+    return _$PublicRedirectedFromJson(snapshot.data()!);
   }
 
   static Map<String, Object?> toFirestore(
@@ -1361,7 +1361,7 @@ class _$PublicRedirectedDocumentReference
     final json = {
       ...model.toJson(),
       if (valueFieldValue != null)
-        _$PublicRedirected2FieldMap['value']!: valueFieldValue,
+        _$PublicRedirectedFieldMap['value']!: valueFieldValue,
     };
 
     final castedReference = reference.withConverter<Map<String, dynamic>>(
@@ -1380,7 +1380,7 @@ class _$PublicRedirectedDocumentReference
     final json = {
       ...model.toJson(),
       if (valueFieldValue != null)
-        _$PublicRedirected2FieldMap['value']!: valueFieldValue,
+        _$PublicRedirectedFieldMap['value']!: valueFieldValue,
     };
 
     transaction.set(reference, json, options);
@@ -1395,7 +1395,7 @@ class _$PublicRedirectedDocumentReference
     final json = {
       ...model.toJson(),
       if (valueFieldValue != null)
-        _$PublicRedirected2FieldMap['value']!: valueFieldValue,
+        _$PublicRedirectedFieldMap['value']!: valueFieldValue,
     };
 
     batch.set(reference, json, options);
@@ -1411,11 +1411,11 @@ class _$PublicRedirectedDocumentReference
     );
     final json = {
       if (value != _sentinel)
-        _$PublicRedirected2FieldMap['value']!: _$PublicRedirected2PerFieldToJson
+        _$PublicRedirectedFieldMap['value']!: _$PublicRedirectedPerFieldToJson
             .value(value as String),
 
       if (valueFieldValue != null)
-        _$PublicRedirected2FieldMap['value']!: valueFieldValue,
+        _$PublicRedirectedFieldMap['value']!: valueFieldValue,
     };
 
     return reference.update(json);
@@ -1432,11 +1432,11 @@ class _$PublicRedirectedDocumentReference
     );
     final json = {
       if (value != _sentinel)
-        _$PublicRedirected2FieldMap['value']!: _$PublicRedirected2PerFieldToJson
+        _$PublicRedirectedFieldMap['value']!: _$PublicRedirectedPerFieldToJson
             .value(value as String),
 
       if (valueFieldValue != null)
-        _$PublicRedirected2FieldMap['value']!: valueFieldValue,
+        _$PublicRedirectedFieldMap['value']!: valueFieldValue,
     };
 
     transaction.update(reference, json);
@@ -1453,11 +1453,11 @@ class _$PublicRedirectedDocumentReference
     );
     final json = {
       if (value != _sentinel)
-        _$PublicRedirected2FieldMap['value']!: _$PublicRedirected2PerFieldToJson
+        _$PublicRedirectedFieldMap['value']!: _$PublicRedirectedPerFieldToJson
             .value(value as String),
 
       if (valueFieldValue != null)
-        _$PublicRedirected2FieldMap['value']!: valueFieldValue,
+        _$PublicRedirectedFieldMap['value']!: valueFieldValue,
     };
 
     batch.update(reference, json);
@@ -1729,34 +1729,32 @@ class _$PublicRedirectedQuery
     return _$PublicRedirectedQuery(
       _collection,
       $referenceWithoutCursor: $referenceWithoutCursor.where(
-        _$PublicRedirected2FieldMap['value']!,
+        _$PublicRedirectedFieldMap['value']!,
         isEqualTo: isEqualTo != _sentinel
-            ? _$PublicRedirected2PerFieldToJson.value(isEqualTo as String)
+            ? _$PublicRedirectedPerFieldToJson.value(isEqualTo as String)
             : null,
         isNotEqualTo: isNotEqualTo != _sentinel
-            ? _$PublicRedirected2PerFieldToJson.value(isNotEqualTo as String)
+            ? _$PublicRedirectedPerFieldToJson.value(isNotEqualTo as String)
             : null,
         isLessThan: isLessThan != null
-            ? _$PublicRedirected2PerFieldToJson.value(isLessThan as String)
+            ? _$PublicRedirectedPerFieldToJson.value(isLessThan as String)
             : null,
         isLessThanOrEqualTo: isLessThanOrEqualTo != null
-            ? _$PublicRedirected2PerFieldToJson.value(
+            ? _$PublicRedirectedPerFieldToJson.value(
                 isLessThanOrEqualTo as String,
               )
             : null,
         isGreaterThan: isGreaterThan != null
-            ? _$PublicRedirected2PerFieldToJson.value(isGreaterThan as String)
+            ? _$PublicRedirectedPerFieldToJson.value(isGreaterThan as String)
             : null,
         isGreaterThanOrEqualTo: isGreaterThanOrEqualTo != null
-            ? _$PublicRedirected2PerFieldToJson.value(
+            ? _$PublicRedirectedPerFieldToJson.value(
                 isGreaterThanOrEqualTo as String,
               )
             : null,
-        whereIn: whereIn?.map(
-          (e) => _$PublicRedirected2PerFieldToJson.value(e),
-        ),
+        whereIn: whereIn?.map((e) => _$PublicRedirectedPerFieldToJson.value(e)),
         whereNotIn: whereNotIn?.map(
-          (e) => _$PublicRedirected2PerFieldToJson.value(e),
+          (e) => _$PublicRedirectedPerFieldToJson.value(e),
         ),
         isNull:
             isNull ??
@@ -1931,7 +1929,7 @@ class _$PublicRedirectedQuery
     PublicRedirectedDocumentSnapshot? startAfterDocument,
   }) {
     final query = $referenceWithoutCursor.orderBy(
-      _$PublicRedirected2FieldMap['value']!,
+      _$PublicRedirectedFieldMap['value']!,
       descending: descending,
     );
     var queryCursor = $queryCursor;
@@ -2088,7 +2086,7 @@ class PublicRedirectedQueryDocumentSnapshot
 // JsonSerializableGenerator
 // **************************************************************************
 
-_Person _$PersonFromJson(Map<String, dynamic> json) => _Person(
+Person _$PersonFromJson(Map<String, dynamic> json) => Person(
   firstName: json['first_name'] as String,
   lastName: json['LAST_NAME'] as String,
 );
@@ -2106,21 +2104,21 @@ abstract class _$PersonPerFieldToJson {
   static Object? lastName(String instance) => instance;
 }
 
-Map<String, dynamic> _$PersonToJson(_Person instance) => <String, dynamic>{
+Map<String, dynamic> _$PersonToJson(Person instance) => <String, dynamic>{
   'first_name': instance.firstName,
   'LAST_NAME': instance.lastName,
 };
 
-PublicRedirected2 _$PublicRedirected2FromJson(Map<String, dynamic> json) =>
-    PublicRedirected2(value: json['value'] as String);
+PublicRedirected _$PublicRedirectedFromJson(Map<String, dynamic> json) =>
+    PublicRedirected(value: json['value'] as String);
 
-const _$PublicRedirected2FieldMap = <String, String>{'value': 'value'};
+const _$PublicRedirectedFieldMap = <String, String>{'value': 'value'};
 
 // ignore: unused_element
-abstract class _$PublicRedirected2PerFieldToJson {
+abstract class _$PublicRedirectedPerFieldToJson {
   // ignore: unused_element
   static Object? value(String instance) => instance;
 }
 
-Map<String, dynamic> _$PublicRedirected2ToJson(PublicRedirected2 instance) =>
+Map<String, dynamic> _$PublicRedirectedToJson(PublicRedirected instance) =>
     <String, dynamic>{'value': instance.value};
