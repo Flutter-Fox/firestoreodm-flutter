@@ -15,9 +15,7 @@ abstract class ParserGenerator<GlobalData, Data, Annotation> extends GeneratorFo
     LibraryReader oldLibrary,
     BuildStep buildStep,
   ) async {
-    final library = await buildStep.resolver.libraryFor(
-      await buildStep.resolver.assetIdForElement(oldLibrary.element),
-    );
+    final library = await buildStep.resolver.libraryFor(await buildStep.resolver.assetIdForElement(oldLibrary.element));
 
     final generationBuffer = StringBuffer();
     // A set used to remove duplicate generations. This is for scenarios where
@@ -28,9 +26,12 @@ abstract class ParserGenerator<GlobalData, Data, Annotation> extends GeneratorFo
 
     var hasGeneratedGlobalCode = false;
 
-    // Process both top-level variables and classes
+    // Process top-level variables, functions, and classes
     final allElements = <Element2>[];
     allElements.addAll(library.topLevelVariables.where((e) => typeChecker.hasAnnotationOf(e)));
+
+    // Also check top-level functions for annotations
+    allElements.addAll(library.topLevelFunctions.where((e) => typeChecker.hasAnnotationOf(e)));
 
     // Also check class declarations for annotations
     for (final classElement in library.classes) {
@@ -69,20 +70,12 @@ abstract class ParserGenerator<GlobalData, Data, Annotation> extends GeneratorFo
 
   GlobalData parseGlobalData(LibraryElement2 library);
 
-  FutureOr<Data?> parseElement(
-    BuildStep buildStep,
-    GlobalData globalData,
-    Element2 element,
-  );
+  FutureOr<Data?> parseElement(BuildStep buildStep, GlobalData globalData, Element2 element);
 
   Iterable<Object> generateForData(GlobalData globalData, Data data);
 
   @override
-  dynamic generateForAnnotatedElement(
-    Element2 element,
-    ConstantReader annotation,
-    BuildStep buildStep,
-  ) async {
+  dynamic generateForAnnotatedElement(Element2 element, ConstantReader annotation, BuildStep buildStep) async {
     // implemented for source_gen_test – otherwise unused
     final globalData = parseGlobalData(element.library2!);
     final data = await parseElement(buildStep, globalData, element);

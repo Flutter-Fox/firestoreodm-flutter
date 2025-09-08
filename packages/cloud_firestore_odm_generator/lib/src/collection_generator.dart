@@ -23,14 +23,7 @@ import 'templates/query_snapshot.dart';
 const namedQueryChecker = TypeChecker.typeNamed(NamedQuery);
 
 class QueryingField {
-  QueryingField(
-    this.name,
-    this.type, {
-    required this.field,
-    required this.updatable,
-    required this.whereDoc,
-    required this.orderByDoc,
-  });
+  QueryingField(this.name, this.type, {required this.field, required this.updatable, required this.whereDoc, required this.orderByDoc});
 
   final String name;
   final DartType type;
@@ -68,9 +61,12 @@ class CollectionGenerator extends ParserGenerator<GlobalData, CollectionGraph, C
   GlobalData parseGlobalData(LibraryElement2 library) {
     final globalData = GlobalData();
 
-    // Process both top-level variables and classes
+    // Process top-level variables, functions, and classes
     final allElements = <Element2>[];
     allElements.addAll(library.topLevelVariables);
+
+    // Also check top-level functions for annotations
+    allElements.addAll(library.topLevelFunctions);
 
     // Also check class declarations for annotations
     for (final classElement in library.classes) {
@@ -83,12 +79,10 @@ class CollectionGenerator extends ParserGenerator<GlobalData, CollectionGraph, C
       for (final queryAnnotation in namedQueryChecker.annotationsOf(element)) {
         final queryData = NamedQueryData.fromAnnotation(queryAnnotation);
 
-        final hasCollectionWithMatchingModelType = collectionChecker.annotationsOf(element).any(
-          (annotation) {
-            final collectionType = CollectionData.modelTypeOfAnnotation(annotation);
-            return collectionType == queryData.type;
-          },
-        );
+        final hasCollectionWithMatchingModelType = collectionChecker.annotationsOf(element).any((annotation) {
+          final collectionType = CollectionData.modelTypeOfAnnotation(annotation);
+          return collectionType == queryData.type;
+        });
 
         if (!hasCollectionWithMatchingModelType) {
           throw InvalidGenerationSourceError(
@@ -106,24 +100,16 @@ class CollectionGenerator extends ParserGenerator<GlobalData, CollectionGraph, C
   }
 
   @override
-  Future<CollectionGraph> parseElement(
-    BuildStep buildStep,
-    GlobalData globalData,
-    Element2 element,
-  ) async {
-    final library = await buildStep.resolver.libraryFor(
-      await buildStep.resolver.assetIdForElement(element),
-    );
-    final collectionAnnotations = collectionChecker.annotationsOf(element).map(
-      (annotation) {
-        return CollectionData.fromAnnotation(
-          annotatedElement: element,
-          globalData: globalData,
-          libraryElement: library,
-          annotation: annotation,
-        );
-      },
-    ).toList();
+  Future<CollectionGraph> parseElement(BuildStep buildStep, GlobalData globalData, Element2 element) async {
+    final library = await buildStep.resolver.libraryFor(await buildStep.resolver.assetIdForElement(element));
+    final collectionAnnotations = collectionChecker.annotationsOf(element).map((annotation) {
+      return CollectionData.fromAnnotation(
+        annotatedElement: element,
+        globalData: globalData,
+        libraryElement: library,
+        annotation: annotation,
+      );
+    }).toList();
 
     return CollectionGraph.parse(collectionAnnotations);
   }
@@ -151,10 +137,7 @@ const _sentinel = _Sentinel();
   }
 
   @override
-  Iterable<Object> generateForData(
-    GlobalData globalData,
-    CollectionGraph data,
-  ) sync* {
+  Iterable<Object> generateForData(GlobalData globalData, CollectionGraph data) sync* {
     for (final collection in data.allCollections) {
       yield CollectionReferenceTemplate(collection);
       yield DocumentReferenceTemplate(collection);

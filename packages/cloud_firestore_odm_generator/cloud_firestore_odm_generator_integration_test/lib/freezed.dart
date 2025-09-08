@@ -33,3 +33,13 @@ sealed class PublicRedirected with _$PublicRedirected {
 
   factory PublicRedirected.fromJson(Map<String, Object?> json) => _$PublicRedirectedFromJson(json);
 }
+
+@Collection<User>('users')
+@freezed
+sealed class User with _$User {
+  factory User({required String name, required String email, int? age}) = _User;
+
+  factory User.fromJson(Map<String, Object?> json) => _$UserFromJson(json);
+}
+
+UserCollectionReference userRef(FirebaseFirestore? firestore) => UserCollectionReference(firestore);
