@@ -7,11 +7,17 @@ version: 1.0.0-dev.90
 environment:
   sdk: ">=3.8.1 <4.0.0"
 
+publish_to: none
+
 dependencies:
   analyzer: ^7.7.1
   build: ^3.1.0
   build_config: ^1.0.0
-  cloud_firestore_odm: ^1.0.0-dev.87
+  cloud_firestore_odm:
+    git:
+      url: https://github.com/Flutter-Fox/firestoreodm-flutter.git
+      ref: fix/migration
+      path: packages/cloud_firestore_odm/
   collection: ^1.15.0
   freezed_annotation: ">=3.0.0 <4.0.0"
   # Can be removed once this is fixed https://github.com/dart-lang/graphs/issues/86
