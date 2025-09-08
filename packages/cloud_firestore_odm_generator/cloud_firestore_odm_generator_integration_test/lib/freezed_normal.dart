@@ -38,3 +38,20 @@ class PublicRedirected with _$PublicRedirected {
   @override
   final String value;
 }
+
+@freezed
+@JsonSerializable(fieldRename: FieldRename.snake)
+@Collection<User2>('users2')
+class User2 with _$User2 {
+  const User2({this.name, this.email, this.age});
+
+  factory User2.fromJson(Map<String, Object?> json) => _$User2FromJson(json);
+
+  final String? name;
+  final String? email;
+  final int? age;
+
+  Map<String, dynamic> toJson() => _$User2ToJson(this);
+
+  bool get isOldEnough => age != null && age! >= 20;
+}

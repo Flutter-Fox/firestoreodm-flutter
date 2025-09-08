@@ -2082,6 +2082,1297 @@ class PublicRedirectedQueryDocumentSnapshot
   }
 }
 
+/// A collection reference object can be used for adding documents,
+/// getting document references, and querying for documents
+/// (using the methods inherited from Query).
+abstract class User2CollectionReference
+    implements
+        User2Query,
+        FirestoreCollectionReference<User2, User2QuerySnapshot> {
+  factory User2CollectionReference([FirebaseFirestore? firestore]) =
+      _$User2CollectionReference;
+
+  static User2 fromFirestore(
+    DocumentSnapshot<Map<String, Object?>> snapshot,
+    SnapshotOptions? options,
+  ) {
+    return _$User2FromJson(snapshot.data()!);
+  }
+
+  static Map<String, Object?> toFirestore(User2 value, SetOptions? options) {
+    return value.toJson();
+  }
+
+  @override
+  CollectionReference<User2> get reference;
+
+  @override
+  User2DocumentReference doc([String? id]);
+
+  /// Add a new document to this collection with the specified data,
+  /// assigning it a document ID automatically.
+  Future<User2DocumentReference> add(User2 value);
+}
+
+class _$User2CollectionReference extends _$User2Query
+    implements User2CollectionReference {
+  factory _$User2CollectionReference([FirebaseFirestore? firestore]) {
+    firestore ??= FirebaseFirestore.instance;
+
+    return _$User2CollectionReference._(
+      firestore
+          .collection('users2')
+          .withConverter(
+            fromFirestore: User2CollectionReference.fromFirestore,
+            toFirestore: User2CollectionReference.toFirestore,
+          ),
+    );
+  }
+
+  _$User2CollectionReference._(CollectionReference<User2> reference)
+    : super(reference, $referenceWithoutCursor: reference);
+
+  String get path => reference.path;
+
+  @override
+  CollectionReference<User2> get reference =>
+      super.reference as CollectionReference<User2>;
+
+  @override
+  User2DocumentReference doc([String? id]) {
+    assert(
+      id == null || id.split('/').length == 1,
+      'The document ID cannot be from a different collection',
+    );
+    return User2DocumentReference(reference.doc(id));
+  }
+
+  @override
+  Future<User2DocumentReference> add(User2 value) {
+    return reference.add(value).then((ref) => User2DocumentReference(ref));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is _$User2CollectionReference &&
+        other.runtimeType == runtimeType &&
+        other.reference == reference;
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, reference);
+}
+
+abstract class User2DocumentReference
+    extends FirestoreDocumentReference<User2, User2DocumentSnapshot> {
+  factory User2DocumentReference(DocumentReference<User2> reference) =
+      _$User2DocumentReference;
+
+  DocumentReference<User2> get reference;
+
+  /// A reference to the [User2CollectionReference] containing this document.
+  User2CollectionReference get parent {
+    return _$User2CollectionReference(reference.firestore);
+  }
+
+  @override
+  Stream<User2DocumentSnapshot> snapshots();
+
+  @override
+  Future<User2DocumentSnapshot> get([GetOptions? options]);
+
+  @override
+  Future<void> delete();
+
+  /// Sets data on the document, overwriting any existing data. If the document
+  /// does not yet exist, it will be created.
+  ///
+  /// If [SetOptions] are provided, the data can be merged into an existing
+  /// document instead of overwriting.
+  ///
+  /// Any [FieldValue]s provided will replace the corresponding fields in the
+  /// [model] during serialization.
+  Future<void> set(
+    User2 model, {
+    SetOptions? options,
+    FieldValue nameFieldValue,
+    FieldValue emailFieldValue,
+    FieldValue ageFieldValue,
+  });
+
+  /// Writes to the document using the transaction API.
+  ///
+  /// If the document does not exist yet, it will be created. If you pass
+  /// [SetOptions], the provided data can be merged into the existing document.
+  ///
+  /// Any [FieldValue]s provided will replace the corresponding fields in the
+  /// [model] during serialization.
+  void transactionSet(
+    Transaction transaction,
+    User2 model, {
+    SetOptions? options,
+    FieldValue nameFieldValue,
+    FieldValue emailFieldValue,
+    FieldValue ageFieldValue,
+  });
+
+  /// Writes to the document using the batch API.
+  ///
+  /// If the document does not exist yet, it will be created. If you pass
+  /// [SetOptions], the provided data can be merged into the existing document.
+  ///
+  /// Any [FieldValue]s provided will replace the corresponding fields in the
+  /// [model] during serialization.
+  void batchSet(
+    WriteBatch batch,
+    User2 model, {
+    SetOptions? options,
+    FieldValue nameFieldValue,
+    FieldValue emailFieldValue,
+    FieldValue ageFieldValue,
+  });
+
+  /// Updates data on the document. Data will be merged with any existing
+  /// document data.
+  ///
+  /// If no document exists yet, the update will fail.
+  Future<void> update({
+    String? name,
+    FieldValue nameFieldValue,
+    String? email,
+    FieldValue emailFieldValue,
+    int? age,
+    FieldValue ageFieldValue,
+  });
+
+  /// Updates fields in the current document using the transaction API.
+  ///
+  /// The update will fail if applied to a document that does not exist.
+  void transactionUpdate(
+    Transaction transaction, {
+    String? name,
+    FieldValue nameFieldValue,
+    String? email,
+    FieldValue emailFieldValue,
+    int? age,
+    FieldValue ageFieldValue,
+  });
+
+  /// Updates fields in the current document using the batch API.
+  ///
+  /// The update will fail if applied to a document that does not exist.
+  void batchUpdate(
+    WriteBatch batch, {
+    String? name,
+    FieldValue nameFieldValue,
+    String? email,
+    FieldValue emailFieldValue,
+    int? age,
+    FieldValue ageFieldValue,
+  });
+}
+
+class _$User2DocumentReference
+    extends FirestoreDocumentReference<User2, User2DocumentSnapshot>
+    implements User2DocumentReference {
+  _$User2DocumentReference(this.reference);
+
+  @override
+  final DocumentReference<User2> reference;
+
+  /// A reference to the [User2CollectionReference] containing this document.
+  User2CollectionReference get parent {
+    return _$User2CollectionReference(reference.firestore);
+  }
+
+  @override
+  Stream<User2DocumentSnapshot> snapshots() {
+    return reference.snapshots().map(User2DocumentSnapshot._);
+  }
+
+  @override
+  Future<User2DocumentSnapshot> get([GetOptions? options]) {
+    return reference.get(options).then(User2DocumentSnapshot._);
+  }
+
+  @override
+  Future<User2DocumentSnapshot> transactionGet(Transaction transaction) {
+    return transaction.get(reference).then(User2DocumentSnapshot._);
+  }
+
+  Future<void> set(
+    User2 model, {
+    SetOptions? options,
+    FieldValue? nameFieldValue,
+    FieldValue? emailFieldValue,
+    FieldValue? ageFieldValue,
+  }) async {
+    final json = {
+      ...model.toJson(),
+      if (nameFieldValue != null) _$User2FieldMap['name']!: nameFieldValue,
+
+      if (emailFieldValue != null) _$User2FieldMap['email']!: emailFieldValue,
+
+      if (ageFieldValue != null) _$User2FieldMap['age']!: ageFieldValue,
+    };
+
+    final castedReference = reference.withConverter<Map<String, dynamic>>(
+      fromFirestore: (snapshot, options) => throw UnimplementedError(),
+      toFirestore: (value, options) => value,
+    );
+    return castedReference.set(json, options);
+  }
+
+  void transactionSet(
+    Transaction transaction,
+    User2 model, {
+    SetOptions? options,
+    FieldValue? nameFieldValue,
+    FieldValue? emailFieldValue,
+    FieldValue? ageFieldValue,
+  }) {
+    final json = {
+      ...model.toJson(),
+      if (nameFieldValue != null) _$User2FieldMap['name']!: nameFieldValue,
+
+      if (emailFieldValue != null) _$User2FieldMap['email']!: emailFieldValue,
+
+      if (ageFieldValue != null) _$User2FieldMap['age']!: ageFieldValue,
+    };
+
+    transaction.set(reference, json, options);
+  }
+
+  void batchSet(
+    WriteBatch batch,
+    User2 model, {
+    SetOptions? options,
+    FieldValue? nameFieldValue,
+    FieldValue? emailFieldValue,
+    FieldValue? ageFieldValue,
+  }) {
+    final json = {
+      ...model.toJson(),
+      if (nameFieldValue != null) _$User2FieldMap['name']!: nameFieldValue,
+
+      if (emailFieldValue != null) _$User2FieldMap['email']!: emailFieldValue,
+
+      if (ageFieldValue != null) _$User2FieldMap['age']!: ageFieldValue,
+    };
+
+    batch.set(reference, json, options);
+  }
+
+  Future<void> update({
+    Object? name = _sentinel,
+    FieldValue? nameFieldValue,
+    Object? email = _sentinel,
+    FieldValue? emailFieldValue,
+    Object? age = _sentinel,
+    FieldValue? ageFieldValue,
+  }) async {
+    assert(
+      name == _sentinel || nameFieldValue == null,
+      "Cannot specify both name and nameFieldValue",
+    );
+    assert(
+      email == _sentinel || emailFieldValue == null,
+      "Cannot specify both email and emailFieldValue",
+    );
+    assert(
+      age == _sentinel || ageFieldValue == null,
+      "Cannot specify both age and ageFieldValue",
+    );
+    final json = {
+      if (name != _sentinel)
+        _$User2FieldMap['name']!: _$User2PerFieldToJson.name(name as String?),
+
+      if (nameFieldValue != null) _$User2FieldMap['name']!: nameFieldValue,
+
+      if (email != _sentinel)
+        _$User2FieldMap['email']!: _$User2PerFieldToJson.email(
+          email as String?,
+        ),
+
+      if (emailFieldValue != null) _$User2FieldMap['email']!: emailFieldValue,
+
+      if (age != _sentinel)
+        _$User2FieldMap['age']!: _$User2PerFieldToJson.age(age as int?),
+
+      if (ageFieldValue != null) _$User2FieldMap['age']!: ageFieldValue,
+    };
+
+    return reference.update(json);
+  }
+
+  void transactionUpdate(
+    Transaction transaction, {
+    Object? name = _sentinel,
+    FieldValue? nameFieldValue,
+    Object? email = _sentinel,
+    FieldValue? emailFieldValue,
+    Object? age = _sentinel,
+    FieldValue? ageFieldValue,
+  }) {
+    assert(
+      name == _sentinel || nameFieldValue == null,
+      "Cannot specify both name and nameFieldValue",
+    );
+    assert(
+      email == _sentinel || emailFieldValue == null,
+      "Cannot specify both email and emailFieldValue",
+    );
+    assert(
+      age == _sentinel || ageFieldValue == null,
+      "Cannot specify both age and ageFieldValue",
+    );
+    final json = {
+      if (name != _sentinel)
+        _$User2FieldMap['name']!: _$User2PerFieldToJson.name(name as String?),
+
+      if (nameFieldValue != null) _$User2FieldMap['name']!: nameFieldValue,
+
+      if (email != _sentinel)
+        _$User2FieldMap['email']!: _$User2PerFieldToJson.email(
+          email as String?,
+        ),
+
+      if (emailFieldValue != null) _$User2FieldMap['email']!: emailFieldValue,
+
+      if (age != _sentinel)
+        _$User2FieldMap['age']!: _$User2PerFieldToJson.age(age as int?),
+
+      if (ageFieldValue != null) _$User2FieldMap['age']!: ageFieldValue,
+    };
+
+    transaction.update(reference, json);
+  }
+
+  void batchUpdate(
+    WriteBatch batch, {
+    Object? name = _sentinel,
+    FieldValue? nameFieldValue,
+    Object? email = _sentinel,
+    FieldValue? emailFieldValue,
+    Object? age = _sentinel,
+    FieldValue? ageFieldValue,
+  }) {
+    assert(
+      name == _sentinel || nameFieldValue == null,
+      "Cannot specify both name and nameFieldValue",
+    );
+    assert(
+      email == _sentinel || emailFieldValue == null,
+      "Cannot specify both email and emailFieldValue",
+    );
+    assert(
+      age == _sentinel || ageFieldValue == null,
+      "Cannot specify both age and ageFieldValue",
+    );
+    final json = {
+      if (name != _sentinel)
+        _$User2FieldMap['name']!: _$User2PerFieldToJson.name(name as String?),
+
+      if (nameFieldValue != null) _$User2FieldMap['name']!: nameFieldValue,
+
+      if (email != _sentinel)
+        _$User2FieldMap['email']!: _$User2PerFieldToJson.email(
+          email as String?,
+        ),
+
+      if (emailFieldValue != null) _$User2FieldMap['email']!: emailFieldValue,
+
+      if (age != _sentinel)
+        _$User2FieldMap['age']!: _$User2PerFieldToJson.age(age as int?),
+
+      if (ageFieldValue != null) _$User2FieldMap['age']!: ageFieldValue,
+    };
+
+    batch.update(reference, json);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is User2DocumentReference &&
+        other.runtimeType == runtimeType &&
+        other.parent == parent &&
+        other.id == id;
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, parent, id);
+}
+
+abstract class User2Query implements QueryReference<User2, User2QuerySnapshot> {
+  @override
+  User2Query limit(int limit);
+
+  @override
+  User2Query limitToLast(int limit);
+
+  /// Perform a where query based on a [FieldPath].
+  ///
+  /// This method is considered unsafe as it does check that the field path
+  /// maps to a valid property or that parameters such as [isEqualTo] receive
+  /// a value of the correct type.
+  ///
+  /// If possible, instead use the more explicit variant of where queries:
+  ///
+  /// **AVOID**:
+  /// ```dart
+  /// collection.whereFieldPath(FieldPath.fromString('title'), isEqualTo: 'title');
+  /// ```
+  ///
+  /// **PREFER**:
+  /// ```dart
+  /// collection.whereTitle(isEqualTo: 'title');
+  /// ```
+  User2Query whereFieldPath(
+    Object fieldPath, {
+    Object? isEqualTo,
+    Object? isNotEqualTo,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    Object? arrayContains,
+    List<Object?>? arrayContainsAny,
+    List<Object?>? whereIn,
+    List<Object?>? whereNotIn,
+    bool? isNull,
+  });
+
+  User2Query whereDocumentId({
+    String? isEqualTo,
+    String? isNotEqualTo,
+    String? isLessThan,
+    String? isLessThanOrEqualTo,
+    String? isGreaterThan,
+    String? isGreaterThanOrEqualTo,
+    List<String>? whereIn,
+    List<String>? whereNotIn,
+    bool? isNull,
+  });
+
+  User2Query whereName({
+    String? isEqualTo,
+    String? isNotEqualTo,
+    String? isLessThan,
+    String? isLessThanOrEqualTo,
+    String? isGreaterThan,
+    String? isGreaterThanOrEqualTo,
+    List<String?>? whereIn,
+    List<String?>? whereNotIn,
+    bool? isNull,
+  });
+
+  User2Query whereEmail({
+    String? isEqualTo,
+    String? isNotEqualTo,
+    String? isLessThan,
+    String? isLessThanOrEqualTo,
+    String? isGreaterThan,
+    String? isGreaterThanOrEqualTo,
+    List<String?>? whereIn,
+    List<String?>? whereNotIn,
+    bool? isNull,
+  });
+
+  User2Query whereAge({
+    int? isEqualTo,
+    int? isNotEqualTo,
+    int? isLessThan,
+    int? isLessThanOrEqualTo,
+    int? isGreaterThan,
+    int? isGreaterThanOrEqualTo,
+    List<int?>? whereIn,
+    List<int?>? whereNotIn,
+    bool? isNull,
+  });
+
+  /// Perform an order query based on a [FieldPath].
+  ///
+  /// This method is considered unsafe as it does check that the field path
+  /// maps to a valid property or that parameters such as [isEqualTo] receive
+  /// a value of the correct type.
+  ///
+  /// If possible, instead use the more explicit variant of order queries:
+  ///
+  /// **AVOID**:
+  /// ```dart
+  /// collection.orderByFieldPath(
+  ///   FieldPath.fromString('title'),
+  ///   startAt: 'title',
+  /// );
+  /// ```
+  ///
+  /// **PREFER**:
+  /// ```dart
+  /// collection.orderByTitle(startAt: 'title');
+  /// ```
+  User2Query orderByFieldPath(
+    Object fieldPath, {
+    bool descending = false,
+    Object startAt,
+    Object startAfter,
+    Object endAt,
+    Object endBefore,
+    User2DocumentSnapshot? startAtDocument,
+    User2DocumentSnapshot? endAtDocument,
+    User2DocumentSnapshot? endBeforeDocument,
+    User2DocumentSnapshot? startAfterDocument,
+  });
+
+  User2Query orderByDocumentId({
+    bool descending = false,
+    String startAt,
+    String startAfter,
+    String endAt,
+    String endBefore,
+    User2DocumentSnapshot? startAtDocument,
+    User2DocumentSnapshot? endAtDocument,
+    User2DocumentSnapshot? endBeforeDocument,
+    User2DocumentSnapshot? startAfterDocument,
+  });
+
+  User2Query orderByName({
+    bool descending = false,
+    String? startAt,
+    String? startAfter,
+    String? endAt,
+    String? endBefore,
+    User2DocumentSnapshot? startAtDocument,
+    User2DocumentSnapshot? endAtDocument,
+    User2DocumentSnapshot? endBeforeDocument,
+    User2DocumentSnapshot? startAfterDocument,
+  });
+
+  User2Query orderByEmail({
+    bool descending = false,
+    String? startAt,
+    String? startAfter,
+    String? endAt,
+    String? endBefore,
+    User2DocumentSnapshot? startAtDocument,
+    User2DocumentSnapshot? endAtDocument,
+    User2DocumentSnapshot? endBeforeDocument,
+    User2DocumentSnapshot? startAfterDocument,
+  });
+
+  User2Query orderByAge({
+    bool descending = false,
+    int? startAt,
+    int? startAfter,
+    int? endAt,
+    int? endBefore,
+    User2DocumentSnapshot? startAtDocument,
+    User2DocumentSnapshot? endAtDocument,
+    User2DocumentSnapshot? endBeforeDocument,
+    User2DocumentSnapshot? startAfterDocument,
+  });
+}
+
+class _$User2Query extends QueryReference<User2, User2QuerySnapshot>
+    implements User2Query {
+  _$User2Query(
+    this._collection, {
+    required Query<User2> $referenceWithoutCursor,
+    $QueryCursor $queryCursor = const $QueryCursor(),
+  }) : super(
+         $referenceWithoutCursor: $referenceWithoutCursor,
+         $queryCursor: $queryCursor,
+       );
+
+  final CollectionReference<Object?> _collection;
+
+  @override
+  Stream<User2QuerySnapshot> snapshots([SnapshotOptions? options]) {
+    return reference.snapshots().map(User2QuerySnapshot._fromQuerySnapshot);
+  }
+
+  @override
+  Future<User2QuerySnapshot> get([GetOptions? options]) {
+    return reference.get(options).then(User2QuerySnapshot._fromQuerySnapshot);
+  }
+
+  @override
+  User2Query limit(int limit) {
+    return _$User2Query(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.limit(limit),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  User2Query limitToLast(int limit) {
+    return _$User2Query(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.limitToLast(limit),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  User2Query whereFieldPath(
+    Object fieldPath, {
+    Object? isEqualTo = _sentinel,
+    Object? isNotEqualTo = _sentinel,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    Object? arrayContains,
+    List<Object?>? arrayContainsAny,
+    List<Object?>? whereIn,
+    List<Object?>? whereNotIn,
+    bool? isNull,
+  }) {
+    return _$User2Query(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        fieldPath,
+        isEqualTo: isEqualTo != _sentinel ? isEqualTo : null,
+        isNotEqualTo: isNotEqualTo != _sentinel ? isNotEqualTo : null,
+        isLessThan: isLessThan,
+        isLessThanOrEqualTo: isLessThanOrEqualTo,
+        isGreaterThan: isGreaterThan,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
+        arrayContains: arrayContains,
+        arrayContainsAny: arrayContainsAny,
+        whereIn: whereIn,
+        whereNotIn: whereNotIn,
+        isNull:
+            isNull ??
+            (isEqualTo == null ? false : null) ??
+            (isNotEqualTo == null ? true : null),
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  User2Query whereDocumentId({
+    Object? isEqualTo = _sentinel,
+    Object? isNotEqualTo = _sentinel,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    List<String>? whereIn,
+    List<String>? whereNotIn,
+    bool? isNull,
+  }) {
+    return _$User2Query(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        FieldPath.documentId,
+        isEqualTo: isEqualTo != _sentinel ? isEqualTo : null,
+        isNotEqualTo: isNotEqualTo != _sentinel ? isNotEqualTo : null,
+        isLessThan: isLessThan,
+        isLessThanOrEqualTo: isLessThanOrEqualTo,
+        isGreaterThan: isGreaterThan,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
+        whereIn: whereIn,
+        whereNotIn: whereNotIn,
+        isNull:
+            isNull ??
+            (isEqualTo == null ? false : null) ??
+            (isNotEqualTo == null ? true : null),
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  User2Query whereName({
+    Object? isEqualTo = _sentinel,
+    Object? isNotEqualTo = _sentinel,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    List<String?>? whereIn,
+    List<String?>? whereNotIn,
+    bool? isNull,
+  }) {
+    return _$User2Query(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        _$User2FieldMap['name']!,
+        isEqualTo: isEqualTo != _sentinel
+            ? _$User2PerFieldToJson.name(isEqualTo as String?)
+            : null,
+        isNotEqualTo: isNotEqualTo != _sentinel
+            ? _$User2PerFieldToJson.name(isNotEqualTo as String?)
+            : null,
+        isLessThan: isLessThan != null
+            ? _$User2PerFieldToJson.name(isLessThan as String?)
+            : null,
+        isLessThanOrEqualTo: isLessThanOrEqualTo != null
+            ? _$User2PerFieldToJson.name(isLessThanOrEqualTo as String?)
+            : null,
+        isGreaterThan: isGreaterThan != null
+            ? _$User2PerFieldToJson.name(isGreaterThan as String?)
+            : null,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo != null
+            ? _$User2PerFieldToJson.name(isGreaterThanOrEqualTo as String?)
+            : null,
+        whereIn: whereIn?.map((e) => _$User2PerFieldToJson.name(e)),
+        whereNotIn: whereNotIn?.map((e) => _$User2PerFieldToJson.name(e)),
+        isNull:
+            isNull ??
+            (isEqualTo == null ? false : null) ??
+            (isNotEqualTo == null ? true : null),
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  User2Query whereEmail({
+    Object? isEqualTo = _sentinel,
+    Object? isNotEqualTo = _sentinel,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    List<String?>? whereIn,
+    List<String?>? whereNotIn,
+    bool? isNull,
+  }) {
+    return _$User2Query(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        _$User2FieldMap['email']!,
+        isEqualTo: isEqualTo != _sentinel
+            ? _$User2PerFieldToJson.email(isEqualTo as String?)
+            : null,
+        isNotEqualTo: isNotEqualTo != _sentinel
+            ? _$User2PerFieldToJson.email(isNotEqualTo as String?)
+            : null,
+        isLessThan: isLessThan != null
+            ? _$User2PerFieldToJson.email(isLessThan as String?)
+            : null,
+        isLessThanOrEqualTo: isLessThanOrEqualTo != null
+            ? _$User2PerFieldToJson.email(isLessThanOrEqualTo as String?)
+            : null,
+        isGreaterThan: isGreaterThan != null
+            ? _$User2PerFieldToJson.email(isGreaterThan as String?)
+            : null,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo != null
+            ? _$User2PerFieldToJson.email(isGreaterThanOrEqualTo as String?)
+            : null,
+        whereIn: whereIn?.map((e) => _$User2PerFieldToJson.email(e)),
+        whereNotIn: whereNotIn?.map((e) => _$User2PerFieldToJson.email(e)),
+        isNull:
+            isNull ??
+            (isEqualTo == null ? false : null) ??
+            (isNotEqualTo == null ? true : null),
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  User2Query whereAge({
+    Object? isEqualTo = _sentinel,
+    Object? isNotEqualTo = _sentinel,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    List<int?>? whereIn,
+    List<int?>? whereNotIn,
+    bool? isNull,
+  }) {
+    return _$User2Query(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        _$User2FieldMap['age']!,
+        isEqualTo: isEqualTo != _sentinel
+            ? _$User2PerFieldToJson.age(isEqualTo as int?)
+            : null,
+        isNotEqualTo: isNotEqualTo != _sentinel
+            ? _$User2PerFieldToJson.age(isNotEqualTo as int?)
+            : null,
+        isLessThan: isLessThan != null
+            ? _$User2PerFieldToJson.age(isLessThan as int?)
+            : null,
+        isLessThanOrEqualTo: isLessThanOrEqualTo != null
+            ? _$User2PerFieldToJson.age(isLessThanOrEqualTo as int?)
+            : null,
+        isGreaterThan: isGreaterThan != null
+            ? _$User2PerFieldToJson.age(isGreaterThan as int?)
+            : null,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo != null
+            ? _$User2PerFieldToJson.age(isGreaterThanOrEqualTo as int?)
+            : null,
+        whereIn: whereIn?.map((e) => _$User2PerFieldToJson.age(e)),
+        whereNotIn: whereNotIn?.map((e) => _$User2PerFieldToJson.age(e)),
+        isNull:
+            isNull ??
+            (isEqualTo == null ? false : null) ??
+            (isNotEqualTo == null ? true : null),
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  User2Query orderByFieldPath(
+    Object fieldPath, {
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    User2DocumentSnapshot? startAtDocument,
+    User2DocumentSnapshot? endAtDocument,
+    User2DocumentSnapshot? endBeforeDocument,
+    User2DocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+      fieldPath,
+      descending: descending,
+    );
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$User2Query(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  @override
+  User2Query orderByDocumentId({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    User2DocumentSnapshot? startAtDocument,
+    User2DocumentSnapshot? endAtDocument,
+    User2DocumentSnapshot? endBeforeDocument,
+    User2DocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+      FieldPath.documentId,
+      descending: descending,
+    );
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$User2Query(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  @override
+  User2Query orderByName({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    User2DocumentSnapshot? startAtDocument,
+    User2DocumentSnapshot? endAtDocument,
+    User2DocumentSnapshot? endBeforeDocument,
+    User2DocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+      _$User2FieldMap['name']!,
+      descending: descending,
+    );
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$User2Query(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  @override
+  User2Query orderByEmail({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    User2DocumentSnapshot? startAtDocument,
+    User2DocumentSnapshot? endAtDocument,
+    User2DocumentSnapshot? endBeforeDocument,
+    User2DocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+      _$User2FieldMap['email']!,
+      descending: descending,
+    );
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$User2Query(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  @override
+  User2Query orderByAge({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    User2DocumentSnapshot? startAtDocument,
+    User2DocumentSnapshot? endAtDocument,
+    User2DocumentSnapshot? endBeforeDocument,
+    User2DocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+      _$User2FieldMap['age']!,
+      descending: descending,
+    );
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$User2Query(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is _$User2Query &&
+        other.runtimeType == runtimeType &&
+        other.reference == reference;
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, reference);
+}
+
+class User2DocumentSnapshot extends FirestoreDocumentSnapshot<User2> {
+  User2DocumentSnapshot._(this.snapshot) : data = snapshot.data();
+
+  @override
+  final DocumentSnapshot<User2> snapshot;
+
+  @override
+  User2DocumentReference get reference {
+    return User2DocumentReference(snapshot.reference);
+  }
+
+  @override
+  final User2? data;
+}
+
+class User2QuerySnapshot
+    extends FirestoreQuerySnapshot<User2, User2QueryDocumentSnapshot> {
+  User2QuerySnapshot._(this.snapshot, this.docs, this.docChanges);
+
+  factory User2QuerySnapshot._fromQuerySnapshot(QuerySnapshot<User2> snapshot) {
+    final docs = snapshot.docs.map(User2QueryDocumentSnapshot._).toList();
+
+    final docChanges = snapshot.docChanges.map((change) {
+      return _decodeDocumentChange(change, User2DocumentSnapshot._);
+    }).toList();
+
+    return User2QuerySnapshot._(snapshot, docs, docChanges);
+  }
+
+  static FirestoreDocumentChange<User2DocumentSnapshot>
+  _decodeDocumentChange<T>(
+    DocumentChange<T> docChange,
+    User2DocumentSnapshot Function(DocumentSnapshot<T> doc) decodeDoc,
+  ) {
+    return FirestoreDocumentChange<User2DocumentSnapshot>(
+      type: docChange.type,
+      oldIndex: docChange.oldIndex,
+      newIndex: docChange.newIndex,
+      doc: decodeDoc(docChange.doc),
+    );
+  }
+
+  final QuerySnapshot<User2> snapshot;
+
+  @override
+  final List<User2QueryDocumentSnapshot> docs;
+
+  @override
+  final List<FirestoreDocumentChange<User2DocumentSnapshot>> docChanges;
+}
+
+class User2QueryDocumentSnapshot extends FirestoreQueryDocumentSnapshot<User2>
+    implements User2DocumentSnapshot {
+  User2QueryDocumentSnapshot._(this.snapshot) : data = snapshot.data();
+
+  @override
+  final QueryDocumentSnapshot<User2> snapshot;
+
+  @override
+  final User2 data;
+
+  @override
+  User2DocumentReference get reference {
+    return User2DocumentReference(snapshot.reference);
+  }
+}
+
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
@@ -2122,3 +3413,31 @@ abstract class _$PublicRedirectedPerFieldToJson {
 
 Map<String, dynamic> _$PublicRedirectedToJson(PublicRedirected instance) =>
     <String, dynamic>{'value': instance.value};
+
+User2 _$User2FromJson(Map<String, dynamic> json) => User2(
+  name: json['name'] as String?,
+  email: json['email'] as String?,
+  age: (json['age'] as num?)?.toInt(),
+);
+
+const _$User2FieldMap = <String, String>{
+  'name': 'name',
+  'email': 'email',
+  'age': 'age',
+};
+
+// ignore: unused_element
+abstract class _$User2PerFieldToJson {
+  // ignore: unused_element
+  static Object? name(String? instance) => instance;
+  // ignore: unused_element
+  static Object? email(String? instance) => instance;
+  // ignore: unused_element
+  static Object? age(int? instance) => instance;
+}
+
+Map<String, dynamic> _$User2ToJson(User2 instance) => <String, dynamic>{
+  'name': instance.name,
+  'email': instance.email,
+  'age': instance.age,
+};

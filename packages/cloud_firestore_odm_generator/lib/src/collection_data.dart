@@ -133,17 +133,16 @@ class CollectionData with Names {
     // Normal constructors: const Person({...});
 
     // For factory constructors, we need to find the redirected constructors
-    final redirectedFreezedConstructors = collectionTargetElement.constructors2.where(
-      (element) {
-        return element.isFactory &&
-            // It should be safe to read "redirectedConstructor" as the build.yaml
-            // asks to run the ODM after Freezed
-            element.redirectedConstructor2 != null;
-      },
-    ).toList();
+    final redirectedFreezedConstructors = collectionTargetElement.constructors2.where((element) {
+      return element.isFactory &&
+          // It should be safe to read "redirectedConstructor" as the build.yaml
+          // asks to run the ODM after Freezed
+          element.redirectedConstructor2 != null;
+    }).toList();
 
     // For normal constructors, we need to check if there's a non-factory constructor
-    final hasNormalFreezedConstructor = hasFreezed &&
+    final hasNormalFreezedConstructor =
+        hasFreezed &&
         collectionTargetElement.constructors2.any(
           (element) => !element.isFactory && element.displayName == '' && element.formalParameters.isNotEmpty,
         );
@@ -164,16 +163,13 @@ class CollectionData with Names {
     // decoding a Model class.
     final modelAndReferenceInTheSameLibrary = collectionTargetElement.library2 == annotatedElementSource;
     if (!modelAndReferenceInTheSameLibrary) {
-      throw InvalidGenerationSourceError(
-        '''
+      throw InvalidGenerationSourceError('''
 When using json_serializable, the `@Collection` annotation and the class that
 represents the content of the collection must be in the same file.
 
 - @Collection is from $annotatedElementSource
 - `$collectionTargetElement` is from ${collectionTargetElement.library2}
-''',
-        element: annotatedElement,
-      );
+''', element: annotatedElement);
     }
 
     // TODO test error handling
@@ -381,10 +377,7 @@ represents the content of the collection must be in the same file.
           updatable: false,
         ),
         ...collectionTargetElement
-            .allFields(
-              hasFreezed: hasFreezed,
-              freezedConstructors: redirectedFreezedConstructors,
-            )
+            .allFields(hasFreezed: hasFreezed, freezedConstructors: redirectedFreezedConstructors)
             .where((f) => f.isPublic)
             .where((f) => !f.hasId())
             .where((f) => !f.isJsonIgnored())
@@ -509,10 +502,7 @@ represents the content of the collection must be in the same file.
 }
 
 extension on ClassElement2 {
-  Iterable<VariableElement2> allFields({
-    required bool hasFreezed,
-    required List<ConstructorElement2> freezedConstructors,
-  }) {
+  Iterable<VariableElement2> allFields({required bool hasFreezed, required List<ConstructorElement2> freezedConstructors}) {
     if (hasFreezed) {
       // For factory constructor mode (with redirected constructors)
       if (freezedConstructors.isNotEmpty) {
@@ -520,14 +510,21 @@ extension on ClassElement2 {
       } else {
         // For normal constructor mode, use fields directly
         // Fields in normal freezed classes are defined directly in the class
-        return fields2.where((field) => !field.isStatic && field.isPublic);
+        // Exclude getters, setters, static/const variables, and methods
+        return fields2.where(
+          (field) =>
+              !field.isStatic &&
+              field.isPublic &&
+              (field.getter2 == null || field.getter2!.isSynthetic) &&
+              (field.setter2 == null || field.setter2!.isSynthetic),
+        );
       }
     } else {
       final uniqueFields = <String, FieldElement2>{};
 
-      final allFields = const <FieldElement2>[].followedBy(fields2).followedBy(
-            allSupertypes.where((e) => !e.isDartCoreObject).expand((e) => e.element3.fields2),
-          );
+      final allFields = const <FieldElement2>[]
+          .followedBy(fields2)
+          .followedBy(allSupertypes.where((e) => !e.isDartCoreObject).expand((e) => e.element3.fields2));
 
       for (final field in allFields) {
         if (field.getter2 != null && !field.getter2!.isSynthetic) continue;

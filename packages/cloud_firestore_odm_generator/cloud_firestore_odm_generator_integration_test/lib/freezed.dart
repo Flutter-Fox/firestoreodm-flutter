@@ -37,9 +37,13 @@ sealed class PublicRedirected with _$PublicRedirected {
 @Collection<User>('users')
 @freezed
 sealed class User with _$User {
-  factory User({required String name, required String email, int? age}) = _User;
+  const factory User({required String name, required String email, int? age}) = _User;
+
+  const User._();
 
   factory User.fromJson(Map<String, Object?> json) => _$UserFromJson(json);
+
+  bool get isOldEnough => age != null && age! >= 20;
 }
 
 UserCollectionReference userRef(FirebaseFirestore? firestore) => UserCollectionReference(firestore);
