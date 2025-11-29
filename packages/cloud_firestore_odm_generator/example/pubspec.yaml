@@ -1,0 +1,17 @@
+name: cloud_firestore_odm_generator_example
+
+environment:
+  sdk: ">=3.8.1 <4.0.0"
+
+publish_to: none
+
+dependencies:
+  cloud_firestore_odm:
+    git:
+      url: https://github.com/Flutter-Fox/firestoreodm-flutter.git
+      ref: fix/migration
+      path: packages/cloud_firestore_odm/
+  json_annotation: "4.9.0"
+
+dev_dependencies:
+  json_serializable: "6.11.2"
