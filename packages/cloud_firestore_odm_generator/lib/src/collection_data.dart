@@ -15,7 +15,8 @@ import 'package:source_helper/source_helper.dart';
 import 'collection_generator.dart';
 import 'names.dart';
 
-const collectionChecker = TypeChecker.typeNamed(Collection);
+const collectionChecker = TypeChecker.fromUrl('package:cloud_firestore_odm/annotation.dart#Collection');
+const idChecker = TypeChecker.fromUrl('package:cloud_firestore_odm/annotation.dart#Id');
 const jsonSerializableChecker = TypeChecker.typeNamed(JsonSerializable);
 const freezedChecker = TypeChecker.typeNamed(Freezed);
 
@@ -285,7 +286,7 @@ represents the content of the collection must be in the same file.
             // Find parameter with Id annotation
             FormalParameterElement? idParam;
             for (final param in redirectedFreezedConstructors.single.formalParameters) {
-              if (const TypeChecker.typeNamed(Id).hasAnnotationOf(param)) {
+              if (idChecker.hasAnnotationOf(param)) {
                 idParam = param;
                 break;
               }
@@ -295,7 +296,7 @@ represents the content of the collection must be in the same file.
             // For normal constructor mode, check fields directly
             final fields = collectionTargetElement.fields2;
             for (final field in fields) {
-              if (const TypeChecker.typeNamed(Id).hasAnnotationOf(field)) {
+              if (idChecker.hasAnnotationOf(field)) {
                 return field.displayName;
               }
             }
@@ -321,7 +322,7 @@ represents the content of the collection must be in the same file.
           // Find field with Id annotation
           FieldElement2? idField;
           for (final field in uniqueFields.values) {
-            if (const TypeChecker.typeNamed(Id).hasAnnotationOf(field)) {
+            if (idChecker.hasAnnotationOf(field)) {
               idField = field;
               break;
             }
@@ -602,7 +603,6 @@ extension on Element2 {
   }
 
   bool hasId() {
-    const checker = TypeChecker.typeNamed(Id);
-    return checker.hasAnnotationOf(this);
+    return idChecker.hasAnnotationOf(this);
   }
 }

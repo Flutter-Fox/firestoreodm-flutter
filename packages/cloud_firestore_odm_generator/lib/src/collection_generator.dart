@@ -20,7 +20,7 @@ import 'templates/query_document_snapshot.dart';
 import 'templates/query_reference.dart';
 import 'templates/query_snapshot.dart';
 
-const namedQueryChecker = TypeChecker.typeNamed(NamedQuery);
+const namedQueryChecker = TypeChecker.fromUrl('package:cloud_firestore_odm/annotation.dart#NamedQuery');
 
 class QueryingField {
   QueryingField(this.name, this.type, {required this.field, required this.updatable, required this.whereDoc, required this.orderByDoc});
