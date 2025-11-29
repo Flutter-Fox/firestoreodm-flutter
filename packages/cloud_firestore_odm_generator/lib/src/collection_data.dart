@@ -98,12 +98,12 @@ class CollectionData with Names {
   }) {
     // TODO find a way to test validation
 
-    final name = annotation.getField('name')!.toStringValue();
-    final prefix = annotation.getField('prefix')!.toStringValue();
+    final name = annotation.getField('name')?.toStringValue();
+    final prefix = annotation.getField('prefix')?.toStringValue();
 
     // TODO(validate name)
 
-    final path = annotation.getField('path')!.toStringValue();
+    final path = annotation.getField('path')?.toStringValue();
     _assertIsValidCollectionPath(path, annotatedElement);
     path!;
 
