@@ -77,7 +77,12 @@ abstract class ParserGenerator<GlobalData, Data, Annotation> extends GeneratorFo
   @override
   dynamic generateForAnnotatedElement(Element2 element, ConstantReader annotation, BuildStep buildStep) async {
     // implemented for source_gen_test – otherwise unused
-    final globalData = parseGlobalData(element.library2!);
+    final library = element.library2;
+    if (library == null) {
+      throw ArgumentError('Element does not have a library');
+    }
+
+    final globalData = parseGlobalData(library);
     final data = await parseElement(buildStep, globalData, element);
 
     if (data == null) return null;

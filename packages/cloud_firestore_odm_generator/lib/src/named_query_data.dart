@@ -12,10 +12,19 @@ class NamedQueryData with Names {
   NamedQueryData(this.queryName, {required this.type});
 
   factory NamedQueryData.fromAnnotation(DartObject dartObject) {
-    final queryName = dartObject.getField('queryName')!.toStringValue()!;
+    final queryNameField = dartObject.getField('queryName');
+    final queryName = queryNameField?.toStringValue();
 
-    final genericType =
-        (dartObject.type! as InterfaceType).typeArguments.single;
+    if (queryName == null) {
+      throw ArgumentError('NamedQuery annotation must have a queryName');
+    }
+
+    final type = dartObject.type;
+    if (type == null) {
+      throw ArgumentError('NamedQuery annotation must have a type');
+    }
+
+    final genericType = (type as InterfaceType).typeArguments.single;
 
     return NamedQueryData(queryName, type: genericType);
   }

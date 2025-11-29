@@ -157,6 +157,13 @@ class CollectionData with Names {
     }
 
     final annotatedElementSource = annotatedElement.library2;
+    if (annotatedElementSource == null) {
+      throw InvalidGenerationSourceError(
+        'Could not determine library for annotated element',
+        element: annotatedElement,
+      );
+    }
+
     // TODO(rrousselGit) handle parts
     // Whether the model class and the reference variable are defined in the same file
     // This is important because json_serializable generates private code for
@@ -327,31 +334,31 @@ represents the content of the collection must be in the same file.
           'fieldPath',
           whereDoc: '''
   /// Perform a where query based on a [FieldPath].
-  /// 
+  ///
   /// This method is considered unsafe as it does check that the field path
   /// maps to a valid property or that parameters such as [isEqualTo] receive
   /// a value of the correct type.
-  /// 
+  ///
   /// If possible, instead use the more explicit variant of where queries:
-  /// 
+  ///
   /// **AVOID**:
   /// ```dart
   /// collection.whereFieldPath(FieldPath.fromString('title'), isEqualTo: 'title');
   /// ```
-  /// 
+  ///
   /// **PREFER**:
   /// ```dart
   /// collection.whereTitle(isEqualTo: 'title');
   /// ```''',
           orderByDoc: '''
   /// Perform an order query based on a [FieldPath].
-  /// 
+  ///
   /// This method is considered unsafe as it does check that the field path
   /// maps to a valid property or that parameters such as [isEqualTo] receive
   /// a value of the correct type.
-  /// 
+  ///
   /// If possible, instead use the more explicit variant of order queries:
-  /// 
+  ///
   /// **AVOID**:
   /// ```dart
   /// collection.orderByFieldPath(
@@ -359,18 +366,18 @@ represents the content of the collection must be in the same file.
   ///   startAt: 'title',
   /// );
   /// ```
-  /// 
+  ///
   /// **PREFER**:
   /// ```dart
   /// collection.orderByTitle(startAt: 'title');
   /// ```''',
-          annotatedElement.library2!.typeProvider.objectType,
+          annotatedElementSource.typeProvider.objectType,
           field: 'fieldPath',
           updatable: false,
         ),
         QueryingField(
           'documentId',
-          annotatedElement.library2!.typeProvider.stringType,
+          annotatedElementSource.typeProvider.stringType,
           whereDoc: '', // Inherited
           orderByDoc: '', // Inherited
           field: 'FieldPath.documentId',
@@ -450,7 +457,11 @@ represents the content of the collection must be in the same file.
   }
 
   static DartType modelTypeOfAnnotation(DartObject annotation) {
-    return (annotation.type! as ParameterizedType).typeArguments.first;
+    final type = annotation.type;
+    if (type == null) {
+      throw ArgumentError('Annotation does not have a type');
+    }
+    return (type as ParameterizedType).typeArguments.first;
   }
 
   static String _generatedJsonTypePrefix({
