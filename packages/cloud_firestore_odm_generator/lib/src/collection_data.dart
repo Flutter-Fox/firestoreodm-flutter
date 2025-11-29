@@ -5,7 +5,6 @@
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:cloud_firestore_odm/annotation.dart';
 import 'package:collection/collection.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:recase/recase.dart';
@@ -159,10 +158,7 @@ class CollectionData with Names {
 
     final annotatedElementSource = annotatedElement.library2;
     if (annotatedElementSource == null) {
-      throw InvalidGenerationSourceError(
-        'Could not determine library for annotated element',
-        element: annotatedElement,
-      );
+      throw InvalidGenerationSourceError('Could not determine library for annotated element', element: annotatedElement);
     }
 
     // TODO(rrousselGit) handle parts

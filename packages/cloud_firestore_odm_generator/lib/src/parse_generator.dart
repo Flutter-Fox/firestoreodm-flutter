@@ -17,6 +17,14 @@ abstract class ParserGenerator<GlobalData, Data, Annotation> extends GeneratorFo
   ) async {
     final library = await buildStep.resolver.libraryFor(await buildStep.resolver.assetIdForElement(oldLibrary.element));
 
+    // Skip part files - they are processed as part of their parent library
+    // Part files have no top-level elements and are included in another library's parts
+    final assetId = await buildStep.resolver.assetIdForElement(oldLibrary.element);
+    final isPart = !(await buildStep.resolver.isLibrary(assetId));
+    if (isPart) {
+      return '';
+    }
+
     final generationBuffer = StringBuffer();
     // A set used to remove duplicate generations. This is for scenarios where
     // two annotations within the library want to generate the same code
