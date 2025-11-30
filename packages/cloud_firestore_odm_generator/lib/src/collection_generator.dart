@@ -101,7 +101,17 @@ class CollectionGenerator extends ParserGenerator<GlobalData, CollectionGraph, C
 
   @override
   Future<CollectionGraph> parseElement(BuildStep buildStep, GlobalData globalData, Element2 element) async {
-    final library = await buildStep.resolver.libraryFor(await buildStep.resolver.assetIdForElement(element));
+    final assetId = await buildStep.resolver.assetIdForElement(element);
+    LibraryElement2 library;
+    try {
+      library = await buildStep.resolver.libraryFor(assetId);
+    } catch (e) {
+      // Defensive: skip if this element is from a part file
+      if (e.toString().contains('not a Dart library') || e.toString().contains('part file')) {
+        return CollectionGraph.parse([]);
+      }
+      rethrow;
+    }
     final collectionAnnotations = collectionChecker.annotationsOf(element).map((annotation) {
       return CollectionData.fromAnnotation(
         annotatedElement: element,

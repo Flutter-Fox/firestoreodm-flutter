@@ -19,12 +19,21 @@ abstract class ParserGenerator<GlobalData, Data, Annotation> extends GeneratorFo
     // Part files have no top-level elements and are included in another library's parts
     // IMPORTANT: Check this BEFORE calling libraryFor to avoid errors
     final assetId = await buildStep.resolver.assetIdForElement(oldLibrary.element);
-    final isPart = !(await buildStep.resolver.isLibrary(assetId));
-    if (isPart) {
-      return '';
-    }
 
-    final library = await buildStep.resolver.libraryFor(assetId);
+    // Use a try-catch approach because isLibrary() has bugs in some analyzer versions
+    // where it returns true for part files when it should return false
+    LibraryElement2 library;
+    try {
+      library = await buildStep.resolver.libraryFor(assetId);
+    } catch (e) {
+      // If libraryFor throws an error about "not a Dart library" or "part file",
+      // it means this is a part file that should be skipped
+      if (e.toString().contains('not a Dart library') ||
+          e.toString().contains('part file')) {
+        return '';
+      }
+      rethrow;
+    }
 
     final generationBuffer = StringBuffer();
     // A set used to remove duplicate generations. This is for scenarios where
