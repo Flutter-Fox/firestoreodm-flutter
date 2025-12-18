@@ -16,7 +16,7 @@ dependencies:
   cloud_firestore_odm:
     git:
       url: https://github.com/Flutter-Fox/firestoreodm-flutter.git
-      ref: fix/migration
+      ref: refactor/odm-2.0.0-dev.0
       path: packages/cloud_firestore_odm/
   collection: ^1.15.0
   freezed_annotation: ">=3.0.0 <4.0.0"
