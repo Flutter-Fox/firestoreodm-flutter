@@ -18,6 +18,8 @@ const collectionChecker = TypeChecker.fromUrl('package:cloud_firestore_odm/annot
 const idChecker = TypeChecker.fromUrl('package:cloud_firestore_odm/annotation.dart#Id');
 const jsonSerializableChecker = TypeChecker.typeNamed(JsonSerializable);
 const freezedChecker = TypeChecker.typeNamed(Freezed);
+const jsonKeyChecker = TypeChecker.typeNamed(JsonKey);
+const jsonValueChecker = TypeChecker.fromUrl('package:json_annotation/json_annotation.dart#JsonValue');
 
 class CollectionGraph {
   CollectionGraph._(this.roots, this.subCollections);
@@ -88,6 +90,8 @@ class CollectionData with Names {
     required this.perFieldToJson,
     required this.idKey,
     required this.libraryElement,
+    required this.isCrossLibrary,
+    required this.usedEnumTypes,
   }) : collectionName = collectionName ?? ReCase(path.split('/').last).camelCase;
 
   factory CollectionData.fromAnnotation({
@@ -166,14 +170,53 @@ class CollectionData with Names {
     // This is important because json_serializable generates private code for
     // decoding a Model class.
     final modelAndReferenceInTheSameLibrary = collectionTargetElement.library2 == annotatedElementSource;
-    if (!modelAndReferenceInTheSameLibrary) {
-      throw InvalidGenerationSourceError('''
-When using json_serializable, the `@Collection` annotation and the class that
-represents the content of the collection must be in the same file.
 
-- @Collection is from $annotatedElementSource
-- `$collectionTargetElement` is from ${collectionTargetElement.library2}
+    // Track if this is a cross-library collection (for later code generation)
+    bool isCrossLibrary = false;
+
+    if (!modelAndReferenceInTheSameLibrary) {
+      // Cross-library collection detected - check if model is safe to use
+      final isSafe = collectionTargetElement.hasSafeCrossLibraryFields(
+        hasFreezed: hasFreezed,
+        freezedConstructors: redirectedFreezedConstructors,
+      );
+
+      if (!isSafe) {
+        // Get list of problematic fields for error message
+        final unsafeFields = collectionTargetElement.getUnsafeCrossLibraryFields(
+          hasFreezed: hasFreezed,
+          freezedConstructors: redirectedFreezedConstructors,
+        );
+
+        throw InvalidGenerationSourceError('''
+Cross-library collections are only supported for models with primitive fields.
+
+The model `${collectionTargetElement.name3}` contains fields that require access to
+private json_serializable helpers: ${unsafeFields.join(', ')}
+
+Unsupported types for cross-library collections:
+  • Enums (require private enum maps like _\$${collectionTargetElement.name3}EnumMap)
+  • Sets (require conversion to List via _\$PerFieldToJson)
+  • Nested objects (require recursive serialization)
+  • Custom JsonConverter types
+
+Supported types:
+  ✓ String, int, double, bool, num (and nullable variants)
+  ✓ List<primitive> (e.g., List<String>, List<int>)
+
+Solutions:
+  1. Move the @Collection annotation to ${collectionTargetElement.library2}
+  2. Change field types to primitives only
+  3. Use @JsonKey(includeFromJson: false, includeToJson: false) to ignore complex fields
+
+Current locations:
+  - @Collection is from $annotatedElementSource
+  - `${collectionTargetElement.name3}` is from ${collectionTargetElement.library2}
 ''', element: annotatedElement);
+      }
+
+      // Model is safe for cross-library usage
+      isCrossLibrary = true;
     }
 
     // TODO test error handling
@@ -259,21 +302,68 @@ represents the content of the collection must be in the same file.
         );
       }
     }
+
+    // For cross-library collections, we need to generate type-specific transformation code.
+    // Collect a mapping of field names to types for use in perFieldToJson.
+    final fieldTypeMap = <String, DartType>{};
+    final usedEnumTypes = <EnumElement>{};
+
+    if (isCrossLibrary) {
+      // Collect field type map
+      for (final field in collectionTargetElement.allFields(
+        hasFreezed: hasFreezed,
+        freezedConstructors: redirectedFreezedConstructors,
+      )) {
+        if (field.isPublic && !field.hasId() && !field.isJsonIgnored()) {
+          final fieldName = field.name3;
+          if (fieldName != null) {
+            fieldTypeMap[fieldName] = field.type;
+          }
+        }
+      }
+
+      // Collect all enum types used in the model
+      usedEnumTypes.addAll(collectEnumTypes(
+        collectionTargetElement,
+        hasFreezed: hasFreezed,
+        freezedConstructors: redirectedFreezedConstructors,
+      ));
+    }
+
     final data = CollectionData(
       type: type,
       path: path,
       collectionName: name,
       collectionPrefix: prefix,
       libraryElement: libraryElement,
+      // For cross-library, ALWAYS use public fromJson (required for primitives)
+      // For same-library, prefer public if available, else use generated private
       fromJson: (json) {
-        if (fromJson != null) return '$type.fromJson($json)';
+        if (isCrossLibrary || fromJson != null) return '$type.fromJson($json)';
         return '${generatedJsonTypePrefix}FromJson($json)';
       },
+      // For cross-library, ALWAYS use public toJson (required for primitives)
+      // For same-library, prefer public if available, else use generated private
       toJson: (value) {
-        if (toJson != null) return '$value.toJson()';
+        if (isCrossLibrary || toJson != null) return '$value.toJson()';
         return '${generatedJsonTypePrefix}ToJson($value)';
       },
-      perFieldToJson: (field) => '${generatedJsonTypePrefix}PerFieldToJson.$field',
+      // For cross-library: generate type-specific transformation code
+      // For same-library: use private PerFieldToJson helpers
+      perFieldToJson: (field) {
+        if (!isCrossLibrary) {
+          return '${generatedJsonTypePrefix}PerFieldToJson.$field';
+        }
+
+        // Look up the field type and generate appropriate transformation code
+        final fieldType = fieldTypeMap[field];
+        if (fieldType == null) {
+          // Fallback for special fields like documentId, fieldPath
+          return '((Object? x) => x)';
+        }
+
+        return generatePerFieldToJsonCode(fieldType, field);
+      },
       // Create custom implementation for allFields
       idKey: (() {
         if (hasFreezed) {
@@ -393,11 +483,17 @@ represents the content of the collection must be in the same file.
                 whereDoc: '',
                 orderByDoc: '',
                 updatable: true,
-                field: "${generatedJsonTypePrefix}FieldMap['${f.name3}']!",
+                // For cross-library, use inline field name from @JsonKey or field name
+                // For same-library, use reference to generated FieldMap
+                field: isCrossLibrary
+                    ? "'${f.getJsonFieldName()}'"
+                    : "${generatedJsonTypePrefix}FieldMap['${f.name3}']!",
               ),
             )
             .toList(),
       ],
+      isCrossLibrary: isCrossLibrary,
+      usedEnumTypes: usedEnumTypes,
     );
 
     final classPrefix = data.classPrefix;
@@ -491,6 +587,14 @@ represents the content of the collection must be in the same file.
   final List<QueryingField> queryableFields;
   final LibraryElement2 libraryElement;
 
+  /// True if this collection is defined in a different library than the model class.
+  /// In this case, we generate inline serialization code instead of using private helpers.
+  final bool isCrossLibrary;
+
+  /// Set of enum types used in this model (for cross-library collections only).
+  /// We generate const maps for these enums to avoid accessing private _$EnumEnumMap.
+  final Set<EnumElement> usedEnumTypes;
+
   late final updatableFields = queryableFields.where((element) => element.updatable).toList();
 
   CollectionData? _parent;
@@ -542,6 +646,41 @@ extension on ClassElement2 {
       return uniqueFields.values;
     }
   }
+
+  /// Returns true if all fields in this class are safe for cross-library collections.
+  ///
+  /// Only checks public, non-ignored fields that would be serialized.
+  bool hasSafeCrossLibraryFields({required bool hasFreezed, required List<ConstructorElement2> freezedConstructors}) {
+    final fieldsToCheck = allFields(hasFreezed: hasFreezed, freezedConstructors: freezedConstructors)
+        .where((f) => f.isPublic)
+        .where((f) => !f.hasId())
+        .where((f) => !f.isJsonIgnored());
+
+    for (final field in fieldsToCheck) {
+      if (!field.type.isSafeForCrossLibrary) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /// Returns a list of unsafe fields with their types for error messages.
+  List<String> getUnsafeCrossLibraryFields({required bool hasFreezed, required List<ConstructorElement2> freezedConstructors}) {
+    final fieldsToCheck = allFields(hasFreezed: hasFreezed, freezedConstructors: freezedConstructors)
+        .where((f) => f.isPublic)
+        .where((f) => !f.hasId())
+        .where((f) => !f.isJsonIgnored());
+
+    final unsafeFields = <String>[];
+    for (final field in fieldsToCheck) {
+      if (!field.type.isSafeForCrossLibrary) {
+        final fieldName = field.name3 ?? 'unknown';
+        final fieldType = field.type.getDisplayString();
+        unsafeFields.add('$fieldName: $fieldType');
+      }
+    }
+    return unsafeFields;
+  }
 }
 
 extension on String {
@@ -577,6 +716,143 @@ extension DartTypeExtension on DartType {
         generic.isEnum ||
         generic is DynamicType;
   }
+
+  /// Returns true if this type is safe to use in cross-library collections.
+  ///
+  /// Safe types are those that can be serialized without accessing private
+  /// json_serializable helpers. We generate inline code for these types.
+  ///
+  /// Supported: primitives, enums, Sets, Lists, Maps, nested objects with public toJson/fromJson
+  /// Not supported: custom converters, generic types, circular dependencies
+  bool get isSafeForCrossLibrary {
+    // Primitive types are safe (including nullable variants)
+    if (isDartCoreString || isDartCoreInt || isDartCoreDouble ||
+        isDartCoreBool || isDartCoreNum) {
+      return true;
+    }
+
+    // Object and dynamic are safe (Firestore native, pass-through)
+    if (isDartCoreObject || this is DynamicType) {
+      return true;
+    }
+
+    // Enums ARE safe - we generate inline enum maps
+    if (isEnum) {
+      return true;
+    }
+
+    // Sets ARE safe - we generate inline .toList() conversions
+    // Recursively check the element type
+    if (isSet) {
+      final elementType = (this as InterfaceType).typeArguments.single;
+      return elementType.isSafeForCrossLibrary;
+    }
+
+    // Lists are safe if their element type is safe
+    if (isList) {
+      final elementType = (this as InterfaceType).typeArguments.single;
+
+      // Detect nested arrays (not supported by Firestore)
+      if (elementType.isList || elementType.isSet) {
+        return false; // Will throw helpful error later
+      }
+
+      // Recursively check element type safety
+      return elementType.isSafeForCrossLibrary;
+    }
+
+    // Maps are safe if they have String keys and safe value types
+    if (isDartCoreMap) {
+      final typeArgs = (this as InterfaceType).typeArguments;
+      if (typeArgs.length != 2) return false;
+
+      final keyType = typeArgs[0];
+      final valueType = typeArgs[1];
+
+      // Only String keys allowed (Firestore limitation)
+      if (!keyType.isDartCoreString) return false;
+
+      // Map<String, dynamic> and Map<String, Object?> are safe
+      if (valueType.isDartCoreObject || valueType is DynamicType) {
+        return true;
+      }
+
+      // Recursively check value type safety
+      return valueType.isSafeForCrossLibrary;
+    }
+
+    // Firestore native types are safe (pass-through)
+    if (isJsonDocumentReference) {
+      return true;
+    }
+
+    // Check for nested objects with public toJson/fromJson
+    // This is done last as it's the most expensive check
+    return _isNestedObjectWithPublicMethods();
+  }
+
+  /// Checks if this type is a nested object with public toJson/fromJson methods.
+  bool _isNestedObjectWithPublicMethods() {
+    // Check if element3 is actually a ClassElement2 before casting
+    if (element3 is! ClassElement2) return false;
+    final classElement = element3 as ClassElement2;
+
+    // Check for public fromJson constructor
+    var hasFromJson = false;
+    for (final ctor in classElement.constructors2) {
+      // Check both displayName and name3 for 'fromJson' (handles named constructors like Nested.fromJson)
+      final isFromJson = ctor.displayName == 'fromJson' ||
+                         ctor.name3 == 'fromJson' ||
+                         ctor.displayName.endsWith('.fromJson');
+
+      if (isFromJson &&
+          !ctor.isPrivate &&
+          ctor.formalParameters.length == 1) {
+        final paramType = ctor.formalParameters.first.type;
+        if (paramType.isDartCoreMap) {
+          hasFromJson = true;
+          break;
+        }
+      }
+    }
+
+    if (!hasFromJson) return false;
+
+    // Check for public toJson method in the class
+    var hasToJson = false;
+    for (final method in classElement.methods2) {
+      if (method.displayName == 'toJson' &&
+          !method.isPrivate &&
+          method.formalParameters.isEmpty) {
+        final returnType = method.returnType;
+        if (returnType.isDartCoreMap) {
+          hasToJson = true;
+          break;
+        }
+      }
+    }
+
+    // Also check supertypes for toJson (like the main implementation does)
+    if (!hasToJson) {
+      for (final supertype in classElement.allSupertypes) {
+        if (supertype.isDartCoreObject) continue;
+        for (final method in supertype.methods2) {
+          if (method.displayName == 'toJson' &&
+              !method.isPrivate &&
+              method.formalParameters.isEmpty) {
+            final returnType = method.returnType;
+            if (returnType.isDartCoreMap) {
+              hasToJson = true;
+              break;
+            }
+          }
+        }
+        if (hasToJson) break;
+      }
+    }
+
+    return hasToJson;
+  }
 }
 
 extension on Element2 {
@@ -601,4 +877,230 @@ extension on Element2 {
   bool hasId() {
     return idChecker.hasAnnotationOf(this);
   }
+
+  /// Gets the JSON field name for this field element.
+  ///
+  /// Returns the custom name from @JsonKey(name: '...') if present,
+  /// otherwise returns the field's original name.
+  ///
+  /// For Phase 1, we do NOT support @JsonSerializable(fieldRename: ...)
+  /// as that would require more complex parsing.
+  String getJsonFieldName() {
+    const checker = TypeChecker.typeNamed(JsonKey);
+    final jsonKeyAnnotation = checker.firstAnnotationOf(this);
+
+    if (jsonKeyAnnotation != null) {
+      final explicitName = jsonKeyAnnotation.getField('name')?.toStringValue();
+      if (explicitName != null) {
+        return explicitName;
+      }
+    }
+
+    // Fall back to field name
+    return name3 ?? displayName;
+  }
+}
+
+/// Generates a const map for enum-to-string serialization.
+///
+/// This is used for cross-library collections to avoid accessing private
+/// `_$EnumNameEnumMap` generated by json_serializable.
+///
+/// Example output:
+/// ```dart
+/// const _firestoreEnumMap_Status = {
+///   Status.active: 'active',
+///   Status.inactive: 'inactive',
+/// };
+/// ```
+String generateEnumMapCode(EnumElement enumElement) {
+  final enumName = enumElement.name;
+  final entries = <String>[];
+
+  for (final constant in enumElement.constants) {
+    final constantName = constant.name;
+    if (constantName == null) continue;
+
+    // Skip the special `values` field that enums automatically have
+    if (constantName == 'values') continue;
+
+    // Check for @JsonValue annotation for custom string values
+    String jsonValue = constantName; // Default to constant name
+
+    final jsonValueAnnotation = jsonValueChecker.firstAnnotationOf(constant);
+    if (jsonValueAnnotation != null) {
+      final customValue = jsonValueAnnotation.getField('value')?.toStringValue();
+      if (customValue != null) {
+        jsonValue = customValue;
+      }
+    }
+
+    entries.add("  $enumName.$constantName: '$jsonValue'");
+  }
+
+  return "const _firestoreEnumMap_$enumName = {\n${entries.join(',\n')},\n};";
+}
+
+/// Generates inline transformation code for cross-library field serialization.
+///
+/// This creates type-specific serialization code that doesn't rely on private
+/// json_serializable helpers.
+///
+/// Examples:
+/// - Enum: `_firestoreEnumMap_Status[field]!`
+/// - Set<String>: `(field as Set?)?.toList()`
+/// - List<Enum>: `(field as List?)?.map((e) => _firestoreEnumMap_Status[e]!).toList()`
+/// - Nested object: `(field) => field?.toJson()`
+/// - Primitive: `((Object? x) => x)` (identity)
+String generatePerFieldToJsonCode(DartType fieldType, String fieldVar) {
+  // Primitive types - pass through with identity
+  if (fieldType.isDartCoreString || fieldType.isDartCoreInt ||
+      fieldType.isDartCoreDouble || fieldType.isDartCoreBool ||
+      fieldType.isDartCoreNum) {
+    return '((Object? x) => x)';
+  }
+
+  // Enums - use generated enum map (wrapped in lambda with type annotation)
+  if (fieldType.isEnum) {
+    final enumName = fieldType.element3!.name;
+    final typeName = fieldType.getDisplayString();
+    return '(($typeName x) => _firestoreEnumMap_$enumName[x]!)';
+  }
+
+  // Sets - convert to List, handling element types (wrapped in lambda with type annotation)
+  if (fieldType.isSet) {
+    final elementType = (fieldType as InterfaceType).typeArguments.single;
+    final typeName = fieldType.getDisplayString();
+
+    if (elementType.isPrimitive) {
+      return '(($typeName x) => (x as Set?)?.toList())';
+    }
+
+    if (elementType.isEnum) {
+      final enumName = elementType.element3!.name;
+      return '(($typeName x) => (x as Set?)?.map((e) => _firestoreEnumMap_$enumName[e]!).toList())';
+    }
+
+    if (elementType._isNestedObjectWithPublicMethods()) {
+      return '(($typeName x) => (x as Set?)?.map((e) => e.toJson()).toList())';
+    }
+  }
+
+  // Lists - handle based on element type
+  if (fieldType.isList) {
+    final elementType = (fieldType as InterfaceType).typeArguments.single;
+
+    // List of primitives - pass through
+    if (elementType.isPrimitive) {
+      return '((Object? x) => x)';
+    }
+
+    // List<Object?> or List<dynamic> - pass through
+    if (elementType.isDartCoreObject || elementType is DynamicType) {
+      return '((Object? x) => x)';
+    }
+
+    // List<Enum> - map each element through enum map (wrapped in lambda with type annotation)
+    if (elementType.isEnum) {
+      final enumName = elementType.element3!.name;
+      final typeName = fieldType.getDisplayString();
+      return '(($typeName x) => (x as List?)?.map((e) => _firestoreEnumMap_$enumName[e]!).toList())';
+    }
+
+    // List<NestedObject> - call toJson on each element (wrapped in lambda with type annotation)
+    if (elementType._isNestedObjectWithPublicMethods()) {
+      final typeName = fieldType.getDisplayString();
+      return '(($typeName x) => (x as List?)?.map((e) => e.toJson()).toList())';
+    }
+  }
+
+  // Maps - handle based on value type
+  if (fieldType.isDartCoreMap) {
+    final typeArgs = (fieldType as InterfaceType).typeArguments;
+    if (typeArgs.length == 2) {
+      final valueType = typeArgs[1];
+
+      // Map<String, dynamic> or Map<String, Object?> - pass through
+      if (valueType.isDartCoreObject || valueType is DynamicType) {
+        return '((Object? x) => x)';
+      }
+
+      // Map<String, primitive> - pass through
+      if (valueType.isPrimitive) {
+        return '((Object? x) => x)';
+      }
+
+      // Map<String, Enum> - transform values (wrapped in lambda with type annotation)
+      if (valueType.isEnum) {
+        final enumName = valueType.element3!.name;
+        final typeName = fieldType.getDisplayString();
+        return '(($typeName x) => (x as Map<String, dynamic>?)?.map((k, v) => MapEntry(k, _firestoreEnumMap_$enumName[v]!)))';
+      }
+
+      // Map<String, NestedObject> - call toJson on values (wrapped in lambda with type annotation)
+      if (valueType._isNestedObjectWithPublicMethods()) {
+        final typeName = fieldType.getDisplayString();
+        return '(($typeName x) => (x as Map<String, dynamic>?)?.map((k, v) => MapEntry(k, v.toJson())))';
+      }
+    }
+  }
+
+  // Nested objects with public toJson/fromJson (wrapped in lambda with type annotation)
+  if (fieldType._isNestedObjectWithPublicMethods()) {
+    final typeName = fieldType.getDisplayString();
+    return '(($typeName x) => x?.toJson())';
+  }
+
+  // Firestore native types - pass through
+  if (fieldType.isJsonDocumentReference) {
+    return '((Object? x) => x)';
+  }
+
+  // Fallback to identity (should not reach here if isSafeForCrossLibrary works correctly)
+  return '((Object? x) => x)';
+}
+
+/// Helper extension for primitive type checking
+extension on DartType {
+  bool get isPrimitive =>
+      isDartCoreString || isDartCoreInt || isDartCoreDouble ||
+      isDartCoreBool || isDartCoreNum;
+}
+
+/// Collects all unique enum types used in a model class.
+///
+/// This scans all fields (including nested types in Lists, Sets, Maps) and
+/// returns a set of EnumElements that need enum maps generated.
+Set<EnumElement> collectEnumTypes(
+  ClassElement2 modelClass, {
+  required bool hasFreezed,
+  required List<ConstructorElement2> freezedConstructors,
+}) {
+  final enumTypes = <EnumElement>{};
+
+  void addEnumType(DartType type) {
+    if (type.isEnum) {
+      enumTypes.add(type.element3 as EnumElement);
+    } else if (type.isList || type.isSet) {
+      final elementType = (type as InterfaceType).typeArguments.single;
+      addEnumType(elementType); // Recursive check
+    } else if (type.isDartCoreMap) {
+      final typeArgs = (type as InterfaceType).typeArguments;
+      if (typeArgs.length == 2) {
+        addEnumType(typeArgs[1]); // Check value type
+      }
+    }
+  }
+
+  // Scan all fields in the model
+  for (final field in modelClass.allFields(
+    hasFreezed: hasFreezed,
+    freezedConstructors: freezedConstructors,
+  )) {
+    if (field.isPublic && !field.hasId() && !field.isJsonIgnored()) {
+      addEnumType(field.type);
+    }
+  }
+
+  return enumTypes;
 }

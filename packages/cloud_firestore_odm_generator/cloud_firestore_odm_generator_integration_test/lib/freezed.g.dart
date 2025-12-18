@@ -17,6 +17,3414 @@ class _Sentinel {
 
 const _sentinel = _Sentinel();
 
+// Enum maps for cross-library collection support
+
+const _firestoreEnumMap_TestEnum = {
+  TestEnum.one: 'one',
+  TestEnum.two: 'two',
+  TestEnum.three: 'three',
+};
+
+/// A collection reference object can be used for adding documents,
+/// getting document references, and querying for documents
+/// (using the methods inherited from Query).
+abstract class NestedCollectionReference
+    implements
+        NestedQuery,
+        FirestoreCollectionReference<Nested, NestedQuerySnapshot> {
+  factory NestedCollectionReference([FirebaseFirestore? firestore]) =
+      _$NestedCollectionReference;
+
+  static Nested fromFirestore(
+    DocumentSnapshot<Map<String, Object?>> snapshot,
+    SnapshotOptions? options,
+  ) {
+    return Nested.fromJson(snapshot.data()!);
+  }
+
+  static Map<String, Object?> toFirestore(Nested value, SetOptions? options) {
+    return value.toJson();
+  }
+
+  @override
+  CollectionReference<Nested> get reference;
+
+  @override
+  NestedDocumentReference doc([String? id]);
+
+  /// Add a new document to this collection with the specified data,
+  /// assigning it a document ID automatically.
+  Future<NestedDocumentReference> add(Nested value);
+}
+
+class _$NestedCollectionReference extends _$NestedQuery
+    implements NestedCollectionReference {
+  factory _$NestedCollectionReference([FirebaseFirestore? firestore]) {
+    firestore ??= FirebaseFirestore.instance;
+
+    return _$NestedCollectionReference._(
+      firestore
+          .collection('people/**/nested')
+          .withConverter(
+            fromFirestore: NestedCollectionReference.fromFirestore,
+            toFirestore: NestedCollectionReference.toFirestore,
+          ),
+    );
+  }
+
+  _$NestedCollectionReference._(CollectionReference<Nested> reference)
+    : super(reference, $referenceWithoutCursor: reference);
+
+  String get path => reference.path;
+
+  @override
+  CollectionReference<Nested> get reference =>
+      super.reference as CollectionReference<Nested>;
+
+  @override
+  NestedDocumentReference doc([String? id]) {
+    assert(
+      id == null || id.split('/').length == 1,
+      'The document ID cannot be from a different collection',
+    );
+    return NestedDocumentReference(reference.doc(id));
+  }
+
+  @override
+  Future<NestedDocumentReference> add(Nested value) {
+    return reference.add(value).then((ref) => NestedDocumentReference(ref));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is _$NestedCollectionReference &&
+        other.runtimeType == runtimeType &&
+        other.reference == reference;
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, reference);
+}
+
+abstract class NestedDocumentReference
+    extends FirestoreDocumentReference<Nested, NestedDocumentSnapshot> {
+  factory NestedDocumentReference(DocumentReference<Nested> reference) =
+      _$NestedDocumentReference;
+
+  DocumentReference<Nested> get reference;
+
+  /// A reference to the [NestedCollectionReference] containing this document.
+  NestedCollectionReference get parent {
+    return _$NestedCollectionReference(reference.firestore);
+  }
+
+  @override
+  Stream<NestedDocumentSnapshot> snapshots();
+
+  @override
+  Future<NestedDocumentSnapshot> get([GetOptions? options]);
+
+  @override
+  Future<void> delete();
+
+  /// Sets data on the document, overwriting any existing data. If the document
+  /// does not yet exist, it will be created.
+  ///
+  /// If [SetOptions] are provided, the data can be merged into an existing
+  /// document instead of overwriting.
+  ///
+  /// Any [FieldValue]s provided will replace the corresponding fields in the
+  /// [model] during serialization.
+  Future<void> set(
+    Nested model, {
+    SetOptions? options,
+    FieldValue valueFieldValue,
+    FieldValue simpleFieldValue,
+    FieldValue valueListFieldValue,
+    FieldValue boolListFieldValue,
+    FieldValue stringListFieldValue,
+    FieldValue numListFieldValue,
+    FieldValue objectListFieldValue,
+    FieldValue dynamicListFieldValue,
+    FieldValue boolSetFieldValue,
+    FieldValue enumValueFieldValue,
+    FieldValue nullableEnumValueFieldValue,
+    FieldValue enumListFieldValue,
+    FieldValue nullableEnumListFieldValue,
+  });
+
+  /// Writes to the document using the transaction API.
+  ///
+  /// If the document does not exist yet, it will be created. If you pass
+  /// [SetOptions], the provided data can be merged into the existing document.
+  ///
+  /// Any [FieldValue]s provided will replace the corresponding fields in the
+  /// [model] during serialization.
+  void transactionSet(
+    Transaction transaction,
+    Nested model, {
+    SetOptions? options,
+    FieldValue valueFieldValue,
+    FieldValue simpleFieldValue,
+    FieldValue valueListFieldValue,
+    FieldValue boolListFieldValue,
+    FieldValue stringListFieldValue,
+    FieldValue numListFieldValue,
+    FieldValue objectListFieldValue,
+    FieldValue dynamicListFieldValue,
+    FieldValue boolSetFieldValue,
+    FieldValue enumValueFieldValue,
+    FieldValue nullableEnumValueFieldValue,
+    FieldValue enumListFieldValue,
+    FieldValue nullableEnumListFieldValue,
+  });
+
+  /// Writes to the document using the batch API.
+  ///
+  /// If the document does not exist yet, it will be created. If you pass
+  /// [SetOptions], the provided data can be merged into the existing document.
+  ///
+  /// Any [FieldValue]s provided will replace the corresponding fields in the
+  /// [model] during serialization.
+  void batchSet(
+    WriteBatch batch,
+    Nested model, {
+    SetOptions? options,
+    FieldValue valueFieldValue,
+    FieldValue simpleFieldValue,
+    FieldValue valueListFieldValue,
+    FieldValue boolListFieldValue,
+    FieldValue stringListFieldValue,
+    FieldValue numListFieldValue,
+    FieldValue objectListFieldValue,
+    FieldValue dynamicListFieldValue,
+    FieldValue boolSetFieldValue,
+    FieldValue enumValueFieldValue,
+    FieldValue nullableEnumValueFieldValue,
+    FieldValue enumListFieldValue,
+    FieldValue nullableEnumListFieldValue,
+  });
+
+  /// Updates data on the document. Data will be merged with any existing
+  /// document data.
+  ///
+  /// If no document exists yet, the update will fail.
+  Future<void> update({
+    Nested? value,
+    FieldValue valueFieldValue,
+    int? simple,
+    FieldValue simpleFieldValue,
+    List<Nested>? valueList,
+    FieldValue valueListFieldValue,
+    List<bool>? boolList,
+    FieldValue boolListFieldValue,
+    List<String>? stringList,
+    FieldValue stringListFieldValue,
+    List<num>? numList,
+    FieldValue numListFieldValue,
+    List<Object?>? objectList,
+    FieldValue objectListFieldValue,
+    List<dynamic>? dynamicList,
+    FieldValue dynamicListFieldValue,
+    Set<bool>? boolSet,
+    FieldValue boolSetFieldValue,
+    TestEnum enumValue,
+    FieldValue enumValueFieldValue,
+    TestEnum? nullableEnumValue,
+    FieldValue nullableEnumValueFieldValue,
+    List<TestEnum> enumList,
+    FieldValue enumListFieldValue,
+    List<TestEnum>? nullableEnumList,
+    FieldValue nullableEnumListFieldValue,
+  });
+
+  /// Updates fields in the current document using the transaction API.
+  ///
+  /// The update will fail if applied to a document that does not exist.
+  void transactionUpdate(
+    Transaction transaction, {
+    Nested? value,
+    FieldValue valueFieldValue,
+    int? simple,
+    FieldValue simpleFieldValue,
+    List<Nested>? valueList,
+    FieldValue valueListFieldValue,
+    List<bool>? boolList,
+    FieldValue boolListFieldValue,
+    List<String>? stringList,
+    FieldValue stringListFieldValue,
+    List<num>? numList,
+    FieldValue numListFieldValue,
+    List<Object?>? objectList,
+    FieldValue objectListFieldValue,
+    List<dynamic>? dynamicList,
+    FieldValue dynamicListFieldValue,
+    Set<bool>? boolSet,
+    FieldValue boolSetFieldValue,
+    TestEnum enumValue,
+    FieldValue enumValueFieldValue,
+    TestEnum? nullableEnumValue,
+    FieldValue nullableEnumValueFieldValue,
+    List<TestEnum> enumList,
+    FieldValue enumListFieldValue,
+    List<TestEnum>? nullableEnumList,
+    FieldValue nullableEnumListFieldValue,
+  });
+
+  /// Updates fields in the current document using the batch API.
+  ///
+  /// The update will fail if applied to a document that does not exist.
+  void batchUpdate(
+    WriteBatch batch, {
+    Nested? value,
+    FieldValue valueFieldValue,
+    int? simple,
+    FieldValue simpleFieldValue,
+    List<Nested>? valueList,
+    FieldValue valueListFieldValue,
+    List<bool>? boolList,
+    FieldValue boolListFieldValue,
+    List<String>? stringList,
+    FieldValue stringListFieldValue,
+    List<num>? numList,
+    FieldValue numListFieldValue,
+    List<Object?>? objectList,
+    FieldValue objectListFieldValue,
+    List<dynamic>? dynamicList,
+    FieldValue dynamicListFieldValue,
+    Set<bool>? boolSet,
+    FieldValue boolSetFieldValue,
+    TestEnum enumValue,
+    FieldValue enumValueFieldValue,
+    TestEnum? nullableEnumValue,
+    FieldValue nullableEnumValueFieldValue,
+    List<TestEnum> enumList,
+    FieldValue enumListFieldValue,
+    List<TestEnum>? nullableEnumList,
+    FieldValue nullableEnumListFieldValue,
+  });
+}
+
+class _$NestedDocumentReference
+    extends FirestoreDocumentReference<Nested, NestedDocumentSnapshot>
+    implements NestedDocumentReference {
+  _$NestedDocumentReference(this.reference);
+
+  @override
+  final DocumentReference<Nested> reference;
+
+  /// A reference to the [NestedCollectionReference] containing this document.
+  NestedCollectionReference get parent {
+    return _$NestedCollectionReference(reference.firestore);
+  }
+
+  @override
+  Stream<NestedDocumentSnapshot> snapshots() {
+    return reference.snapshots().map(NestedDocumentSnapshot._);
+  }
+
+  @override
+  Future<NestedDocumentSnapshot> get([GetOptions? options]) {
+    return reference.get(options).then(NestedDocumentSnapshot._);
+  }
+
+  @override
+  Future<NestedDocumentSnapshot> transactionGet(Transaction transaction) {
+    return transaction.get(reference).then(NestedDocumentSnapshot._);
+  }
+
+  Future<void> set(
+    Nested model, {
+    SetOptions? options,
+    FieldValue? valueFieldValue,
+    FieldValue? simpleFieldValue,
+    FieldValue? valueListFieldValue,
+    FieldValue? boolListFieldValue,
+    FieldValue? stringListFieldValue,
+    FieldValue? numListFieldValue,
+    FieldValue? objectListFieldValue,
+    FieldValue? dynamicListFieldValue,
+    FieldValue? boolSetFieldValue,
+    FieldValue? enumValueFieldValue,
+    FieldValue? nullableEnumValueFieldValue,
+    FieldValue? enumListFieldValue,
+    FieldValue? nullableEnumListFieldValue,
+  }) async {
+    final json = {
+      ...model.toJson(),
+      if (valueFieldValue != null) 'value': valueFieldValue,
+
+      if (simpleFieldValue != null) 'simple': simpleFieldValue,
+
+      if (valueListFieldValue != null) 'valueList': valueListFieldValue,
+
+      if (boolListFieldValue != null) 'boolList': boolListFieldValue,
+
+      if (stringListFieldValue != null) 'stringList': stringListFieldValue,
+
+      if (numListFieldValue != null) 'numList': numListFieldValue,
+
+      if (objectListFieldValue != null) 'objectList': objectListFieldValue,
+
+      if (dynamicListFieldValue != null) 'dynamicList': dynamicListFieldValue,
+
+      if (boolSetFieldValue != null) 'boolSet': boolSetFieldValue,
+
+      if (enumValueFieldValue != null) 'enumValue': enumValueFieldValue,
+
+      if (nullableEnumValueFieldValue != null)
+        'nullableEnumValue': nullableEnumValueFieldValue,
+
+      if (enumListFieldValue != null) 'enumList': enumListFieldValue,
+
+      if (nullableEnumListFieldValue != null)
+        'nullableEnumList': nullableEnumListFieldValue,
+    };
+
+    final castedReference = reference.withConverter<Map<String, dynamic>>(
+      fromFirestore: (snapshot, options) => throw UnimplementedError(),
+      toFirestore: (value, options) => value,
+    );
+    return castedReference.set(json, options);
+  }
+
+  void transactionSet(
+    Transaction transaction,
+    Nested model, {
+    SetOptions? options,
+    FieldValue? valueFieldValue,
+    FieldValue? simpleFieldValue,
+    FieldValue? valueListFieldValue,
+    FieldValue? boolListFieldValue,
+    FieldValue? stringListFieldValue,
+    FieldValue? numListFieldValue,
+    FieldValue? objectListFieldValue,
+    FieldValue? dynamicListFieldValue,
+    FieldValue? boolSetFieldValue,
+    FieldValue? enumValueFieldValue,
+    FieldValue? nullableEnumValueFieldValue,
+    FieldValue? enumListFieldValue,
+    FieldValue? nullableEnumListFieldValue,
+  }) {
+    final json = {
+      ...model.toJson(),
+      if (valueFieldValue != null) 'value': valueFieldValue,
+
+      if (simpleFieldValue != null) 'simple': simpleFieldValue,
+
+      if (valueListFieldValue != null) 'valueList': valueListFieldValue,
+
+      if (boolListFieldValue != null) 'boolList': boolListFieldValue,
+
+      if (stringListFieldValue != null) 'stringList': stringListFieldValue,
+
+      if (numListFieldValue != null) 'numList': numListFieldValue,
+
+      if (objectListFieldValue != null) 'objectList': objectListFieldValue,
+
+      if (dynamicListFieldValue != null) 'dynamicList': dynamicListFieldValue,
+
+      if (boolSetFieldValue != null) 'boolSet': boolSetFieldValue,
+
+      if (enumValueFieldValue != null) 'enumValue': enumValueFieldValue,
+
+      if (nullableEnumValueFieldValue != null)
+        'nullableEnumValue': nullableEnumValueFieldValue,
+
+      if (enumListFieldValue != null) 'enumList': enumListFieldValue,
+
+      if (nullableEnumListFieldValue != null)
+        'nullableEnumList': nullableEnumListFieldValue,
+    };
+
+    transaction.set(reference, json, options);
+  }
+
+  void batchSet(
+    WriteBatch batch,
+    Nested model, {
+    SetOptions? options,
+    FieldValue? valueFieldValue,
+    FieldValue? simpleFieldValue,
+    FieldValue? valueListFieldValue,
+    FieldValue? boolListFieldValue,
+    FieldValue? stringListFieldValue,
+    FieldValue? numListFieldValue,
+    FieldValue? objectListFieldValue,
+    FieldValue? dynamicListFieldValue,
+    FieldValue? boolSetFieldValue,
+    FieldValue? enumValueFieldValue,
+    FieldValue? nullableEnumValueFieldValue,
+    FieldValue? enumListFieldValue,
+    FieldValue? nullableEnumListFieldValue,
+  }) {
+    final json = {
+      ...model.toJson(),
+      if (valueFieldValue != null) 'value': valueFieldValue,
+
+      if (simpleFieldValue != null) 'simple': simpleFieldValue,
+
+      if (valueListFieldValue != null) 'valueList': valueListFieldValue,
+
+      if (boolListFieldValue != null) 'boolList': boolListFieldValue,
+
+      if (stringListFieldValue != null) 'stringList': stringListFieldValue,
+
+      if (numListFieldValue != null) 'numList': numListFieldValue,
+
+      if (objectListFieldValue != null) 'objectList': objectListFieldValue,
+
+      if (dynamicListFieldValue != null) 'dynamicList': dynamicListFieldValue,
+
+      if (boolSetFieldValue != null) 'boolSet': boolSetFieldValue,
+
+      if (enumValueFieldValue != null) 'enumValue': enumValueFieldValue,
+
+      if (nullableEnumValueFieldValue != null)
+        'nullableEnumValue': nullableEnumValueFieldValue,
+
+      if (enumListFieldValue != null) 'enumList': enumListFieldValue,
+
+      if (nullableEnumListFieldValue != null)
+        'nullableEnumList': nullableEnumListFieldValue,
+    };
+
+    batch.set(reference, json, options);
+  }
+
+  Future<void> update({
+    Object? value = _sentinel,
+    FieldValue? valueFieldValue,
+    Object? simple = _sentinel,
+    FieldValue? simpleFieldValue,
+    Object? valueList = _sentinel,
+    FieldValue? valueListFieldValue,
+    Object? boolList = _sentinel,
+    FieldValue? boolListFieldValue,
+    Object? stringList = _sentinel,
+    FieldValue? stringListFieldValue,
+    Object? numList = _sentinel,
+    FieldValue? numListFieldValue,
+    Object? objectList = _sentinel,
+    FieldValue? objectListFieldValue,
+    Object? dynamicList = _sentinel,
+    FieldValue? dynamicListFieldValue,
+    Object? boolSet = _sentinel,
+    FieldValue? boolSetFieldValue,
+    Object? enumValue = _sentinel,
+    FieldValue? enumValueFieldValue,
+    Object? nullableEnumValue = _sentinel,
+    FieldValue? nullableEnumValueFieldValue,
+    Object? enumList = _sentinel,
+    FieldValue? enumListFieldValue,
+    Object? nullableEnumList = _sentinel,
+    FieldValue? nullableEnumListFieldValue,
+  }) async {
+    assert(
+      value == _sentinel || valueFieldValue == null,
+      "Cannot specify both value and valueFieldValue",
+    );
+    assert(
+      simple == _sentinel || simpleFieldValue == null,
+      "Cannot specify both simple and simpleFieldValue",
+    );
+    assert(
+      valueList == _sentinel || valueListFieldValue == null,
+      "Cannot specify both valueList and valueListFieldValue",
+    );
+    assert(
+      boolList == _sentinel || boolListFieldValue == null,
+      "Cannot specify both boolList and boolListFieldValue",
+    );
+    assert(
+      stringList == _sentinel || stringListFieldValue == null,
+      "Cannot specify both stringList and stringListFieldValue",
+    );
+    assert(
+      numList == _sentinel || numListFieldValue == null,
+      "Cannot specify both numList and numListFieldValue",
+    );
+    assert(
+      objectList == _sentinel || objectListFieldValue == null,
+      "Cannot specify both objectList and objectListFieldValue",
+    );
+    assert(
+      dynamicList == _sentinel || dynamicListFieldValue == null,
+      "Cannot specify both dynamicList and dynamicListFieldValue",
+    );
+    assert(
+      boolSet == _sentinel || boolSetFieldValue == null,
+      "Cannot specify both boolSet and boolSetFieldValue",
+    );
+    assert(
+      enumValue == _sentinel || enumValueFieldValue == null,
+      "Cannot specify both enumValue and enumValueFieldValue",
+    );
+    assert(
+      nullableEnumValue == _sentinel || nullableEnumValueFieldValue == null,
+      "Cannot specify both nullableEnumValue and nullableEnumValueFieldValue",
+    );
+    assert(
+      enumList == _sentinel || enumListFieldValue == null,
+      "Cannot specify both enumList and enumListFieldValue",
+    );
+    assert(
+      nullableEnumList == _sentinel || nullableEnumListFieldValue == null,
+      "Cannot specify both nullableEnumList and nullableEnumListFieldValue",
+    );
+    final json = {
+      if (value != _sentinel)
+        'value': ((Nested? x) => x?.toJson())(value as Nested?),
+
+      if (valueFieldValue != null) 'value': valueFieldValue,
+
+      if (simple != _sentinel) 'simple': ((Object? x) => x)(simple as int?),
+
+      if (simpleFieldValue != null) 'simple': simpleFieldValue,
+
+      if (valueList != _sentinel)
+        'valueList': ((List<Nested>? x) => (x as List?)
+            ?.map((e) => e.toJson())
+            .toList())(valueList as List<Nested>?),
+
+      if (valueListFieldValue != null) 'valueList': valueListFieldValue,
+
+      if (boolList != _sentinel)
+        'boolList': ((Object? x) => x)(boolList as List<bool>?),
+
+      if (boolListFieldValue != null) 'boolList': boolListFieldValue,
+
+      if (stringList != _sentinel)
+        'stringList': ((Object? x) => x)(stringList as List<String>?),
+
+      if (stringListFieldValue != null) 'stringList': stringListFieldValue,
+
+      if (numList != _sentinel)
+        'numList': ((Object? x) => x)(numList as List<num>?),
+
+      if (numListFieldValue != null) 'numList': numListFieldValue,
+
+      if (objectList != _sentinel)
+        'objectList': ((Object? x) => x)(objectList as List<Object?>?),
+
+      if (objectListFieldValue != null) 'objectList': objectListFieldValue,
+
+      if (dynamicList != _sentinel)
+        'dynamicList': ((Object? x) => x)(dynamicList as List<dynamic>?),
+
+      if (dynamicListFieldValue != null) 'dynamicList': dynamicListFieldValue,
+
+      if (boolSet != _sentinel)
+        'boolSet': ((Set<bool>? x) =>
+            (x as Set?)?.toList())(boolSet as Set<bool>?),
+
+      if (boolSetFieldValue != null) 'boolSet': boolSetFieldValue,
+
+      if (enumValue != _sentinel)
+        'enumValue': ((TestEnum x) =>
+            _firestoreEnumMap_TestEnum[x]!)(enumValue as TestEnum),
+
+      if (enumValueFieldValue != null) 'enumValue': enumValueFieldValue,
+
+      if (nullableEnumValue != _sentinel)
+        'nullableEnumValue': ((TestEnum? x) =>
+            _firestoreEnumMap_TestEnum[x]!)(nullableEnumValue as TestEnum?),
+
+      if (nullableEnumValueFieldValue != null)
+        'nullableEnumValue': nullableEnumValueFieldValue,
+
+      if (enumList != _sentinel)
+        'enumList': ((List<TestEnum> x) => (x as List?)
+            ?.map((e) => _firestoreEnumMap_TestEnum[e]!)
+            .toList())(enumList as List<TestEnum>),
+
+      if (enumListFieldValue != null) 'enumList': enumListFieldValue,
+
+      if (nullableEnumList != _sentinel)
+        'nullableEnumList': ((List<TestEnum>? x) => (x as List?)
+            ?.map((e) => _firestoreEnumMap_TestEnum[e]!)
+            .toList())(nullableEnumList as List<TestEnum>?),
+
+      if (nullableEnumListFieldValue != null)
+        'nullableEnumList': nullableEnumListFieldValue,
+    };
+
+    return reference.update(json);
+  }
+
+  void transactionUpdate(
+    Transaction transaction, {
+    Object? value = _sentinel,
+    FieldValue? valueFieldValue,
+    Object? simple = _sentinel,
+    FieldValue? simpleFieldValue,
+    Object? valueList = _sentinel,
+    FieldValue? valueListFieldValue,
+    Object? boolList = _sentinel,
+    FieldValue? boolListFieldValue,
+    Object? stringList = _sentinel,
+    FieldValue? stringListFieldValue,
+    Object? numList = _sentinel,
+    FieldValue? numListFieldValue,
+    Object? objectList = _sentinel,
+    FieldValue? objectListFieldValue,
+    Object? dynamicList = _sentinel,
+    FieldValue? dynamicListFieldValue,
+    Object? boolSet = _sentinel,
+    FieldValue? boolSetFieldValue,
+    Object? enumValue = _sentinel,
+    FieldValue? enumValueFieldValue,
+    Object? nullableEnumValue = _sentinel,
+    FieldValue? nullableEnumValueFieldValue,
+    Object? enumList = _sentinel,
+    FieldValue? enumListFieldValue,
+    Object? nullableEnumList = _sentinel,
+    FieldValue? nullableEnumListFieldValue,
+  }) {
+    assert(
+      value == _sentinel || valueFieldValue == null,
+      "Cannot specify both value and valueFieldValue",
+    );
+    assert(
+      simple == _sentinel || simpleFieldValue == null,
+      "Cannot specify both simple and simpleFieldValue",
+    );
+    assert(
+      valueList == _sentinel || valueListFieldValue == null,
+      "Cannot specify both valueList and valueListFieldValue",
+    );
+    assert(
+      boolList == _sentinel || boolListFieldValue == null,
+      "Cannot specify both boolList and boolListFieldValue",
+    );
+    assert(
+      stringList == _sentinel || stringListFieldValue == null,
+      "Cannot specify both stringList and stringListFieldValue",
+    );
+    assert(
+      numList == _sentinel || numListFieldValue == null,
+      "Cannot specify both numList and numListFieldValue",
+    );
+    assert(
+      objectList == _sentinel || objectListFieldValue == null,
+      "Cannot specify both objectList and objectListFieldValue",
+    );
+    assert(
+      dynamicList == _sentinel || dynamicListFieldValue == null,
+      "Cannot specify both dynamicList and dynamicListFieldValue",
+    );
+    assert(
+      boolSet == _sentinel || boolSetFieldValue == null,
+      "Cannot specify both boolSet and boolSetFieldValue",
+    );
+    assert(
+      enumValue == _sentinel || enumValueFieldValue == null,
+      "Cannot specify both enumValue and enumValueFieldValue",
+    );
+    assert(
+      nullableEnumValue == _sentinel || nullableEnumValueFieldValue == null,
+      "Cannot specify both nullableEnumValue and nullableEnumValueFieldValue",
+    );
+    assert(
+      enumList == _sentinel || enumListFieldValue == null,
+      "Cannot specify both enumList and enumListFieldValue",
+    );
+    assert(
+      nullableEnumList == _sentinel || nullableEnumListFieldValue == null,
+      "Cannot specify both nullableEnumList and nullableEnumListFieldValue",
+    );
+    final json = {
+      if (value != _sentinel)
+        'value': ((Nested? x) => x?.toJson())(value as Nested?),
+
+      if (valueFieldValue != null) 'value': valueFieldValue,
+
+      if (simple != _sentinel) 'simple': ((Object? x) => x)(simple as int?),
+
+      if (simpleFieldValue != null) 'simple': simpleFieldValue,
+
+      if (valueList != _sentinel)
+        'valueList': ((List<Nested>? x) => (x as List?)
+            ?.map((e) => e.toJson())
+            .toList())(valueList as List<Nested>?),
+
+      if (valueListFieldValue != null) 'valueList': valueListFieldValue,
+
+      if (boolList != _sentinel)
+        'boolList': ((Object? x) => x)(boolList as List<bool>?),
+
+      if (boolListFieldValue != null) 'boolList': boolListFieldValue,
+
+      if (stringList != _sentinel)
+        'stringList': ((Object? x) => x)(stringList as List<String>?),
+
+      if (stringListFieldValue != null) 'stringList': stringListFieldValue,
+
+      if (numList != _sentinel)
+        'numList': ((Object? x) => x)(numList as List<num>?),
+
+      if (numListFieldValue != null) 'numList': numListFieldValue,
+
+      if (objectList != _sentinel)
+        'objectList': ((Object? x) => x)(objectList as List<Object?>?),
+
+      if (objectListFieldValue != null) 'objectList': objectListFieldValue,
+
+      if (dynamicList != _sentinel)
+        'dynamicList': ((Object? x) => x)(dynamicList as List<dynamic>?),
+
+      if (dynamicListFieldValue != null) 'dynamicList': dynamicListFieldValue,
+
+      if (boolSet != _sentinel)
+        'boolSet': ((Set<bool>? x) =>
+            (x as Set?)?.toList())(boolSet as Set<bool>?),
+
+      if (boolSetFieldValue != null) 'boolSet': boolSetFieldValue,
+
+      if (enumValue != _sentinel)
+        'enumValue': ((TestEnum x) =>
+            _firestoreEnumMap_TestEnum[x]!)(enumValue as TestEnum),
+
+      if (enumValueFieldValue != null) 'enumValue': enumValueFieldValue,
+
+      if (nullableEnumValue != _sentinel)
+        'nullableEnumValue': ((TestEnum? x) =>
+            _firestoreEnumMap_TestEnum[x]!)(nullableEnumValue as TestEnum?),
+
+      if (nullableEnumValueFieldValue != null)
+        'nullableEnumValue': nullableEnumValueFieldValue,
+
+      if (enumList != _sentinel)
+        'enumList': ((List<TestEnum> x) => (x as List?)
+            ?.map((e) => _firestoreEnumMap_TestEnum[e]!)
+            .toList())(enumList as List<TestEnum>),
+
+      if (enumListFieldValue != null) 'enumList': enumListFieldValue,
+
+      if (nullableEnumList != _sentinel)
+        'nullableEnumList': ((List<TestEnum>? x) => (x as List?)
+            ?.map((e) => _firestoreEnumMap_TestEnum[e]!)
+            .toList())(nullableEnumList as List<TestEnum>?),
+
+      if (nullableEnumListFieldValue != null)
+        'nullableEnumList': nullableEnumListFieldValue,
+    };
+
+    transaction.update(reference, json);
+  }
+
+  void batchUpdate(
+    WriteBatch batch, {
+    Object? value = _sentinel,
+    FieldValue? valueFieldValue,
+    Object? simple = _sentinel,
+    FieldValue? simpleFieldValue,
+    Object? valueList = _sentinel,
+    FieldValue? valueListFieldValue,
+    Object? boolList = _sentinel,
+    FieldValue? boolListFieldValue,
+    Object? stringList = _sentinel,
+    FieldValue? stringListFieldValue,
+    Object? numList = _sentinel,
+    FieldValue? numListFieldValue,
+    Object? objectList = _sentinel,
+    FieldValue? objectListFieldValue,
+    Object? dynamicList = _sentinel,
+    FieldValue? dynamicListFieldValue,
+    Object? boolSet = _sentinel,
+    FieldValue? boolSetFieldValue,
+    Object? enumValue = _sentinel,
+    FieldValue? enumValueFieldValue,
+    Object? nullableEnumValue = _sentinel,
+    FieldValue? nullableEnumValueFieldValue,
+    Object? enumList = _sentinel,
+    FieldValue? enumListFieldValue,
+    Object? nullableEnumList = _sentinel,
+    FieldValue? nullableEnumListFieldValue,
+  }) {
+    assert(
+      value == _sentinel || valueFieldValue == null,
+      "Cannot specify both value and valueFieldValue",
+    );
+    assert(
+      simple == _sentinel || simpleFieldValue == null,
+      "Cannot specify both simple and simpleFieldValue",
+    );
+    assert(
+      valueList == _sentinel || valueListFieldValue == null,
+      "Cannot specify both valueList and valueListFieldValue",
+    );
+    assert(
+      boolList == _sentinel || boolListFieldValue == null,
+      "Cannot specify both boolList and boolListFieldValue",
+    );
+    assert(
+      stringList == _sentinel || stringListFieldValue == null,
+      "Cannot specify both stringList and stringListFieldValue",
+    );
+    assert(
+      numList == _sentinel || numListFieldValue == null,
+      "Cannot specify both numList and numListFieldValue",
+    );
+    assert(
+      objectList == _sentinel || objectListFieldValue == null,
+      "Cannot specify both objectList and objectListFieldValue",
+    );
+    assert(
+      dynamicList == _sentinel || dynamicListFieldValue == null,
+      "Cannot specify both dynamicList and dynamicListFieldValue",
+    );
+    assert(
+      boolSet == _sentinel || boolSetFieldValue == null,
+      "Cannot specify both boolSet and boolSetFieldValue",
+    );
+    assert(
+      enumValue == _sentinel || enumValueFieldValue == null,
+      "Cannot specify both enumValue and enumValueFieldValue",
+    );
+    assert(
+      nullableEnumValue == _sentinel || nullableEnumValueFieldValue == null,
+      "Cannot specify both nullableEnumValue and nullableEnumValueFieldValue",
+    );
+    assert(
+      enumList == _sentinel || enumListFieldValue == null,
+      "Cannot specify both enumList and enumListFieldValue",
+    );
+    assert(
+      nullableEnumList == _sentinel || nullableEnumListFieldValue == null,
+      "Cannot specify both nullableEnumList and nullableEnumListFieldValue",
+    );
+    final json = {
+      if (value != _sentinel)
+        'value': ((Nested? x) => x?.toJson())(value as Nested?),
+
+      if (valueFieldValue != null) 'value': valueFieldValue,
+
+      if (simple != _sentinel) 'simple': ((Object? x) => x)(simple as int?),
+
+      if (simpleFieldValue != null) 'simple': simpleFieldValue,
+
+      if (valueList != _sentinel)
+        'valueList': ((List<Nested>? x) => (x as List?)
+            ?.map((e) => e.toJson())
+            .toList())(valueList as List<Nested>?),
+
+      if (valueListFieldValue != null) 'valueList': valueListFieldValue,
+
+      if (boolList != _sentinel)
+        'boolList': ((Object? x) => x)(boolList as List<bool>?),
+
+      if (boolListFieldValue != null) 'boolList': boolListFieldValue,
+
+      if (stringList != _sentinel)
+        'stringList': ((Object? x) => x)(stringList as List<String>?),
+
+      if (stringListFieldValue != null) 'stringList': stringListFieldValue,
+
+      if (numList != _sentinel)
+        'numList': ((Object? x) => x)(numList as List<num>?),
+
+      if (numListFieldValue != null) 'numList': numListFieldValue,
+
+      if (objectList != _sentinel)
+        'objectList': ((Object? x) => x)(objectList as List<Object?>?),
+
+      if (objectListFieldValue != null) 'objectList': objectListFieldValue,
+
+      if (dynamicList != _sentinel)
+        'dynamicList': ((Object? x) => x)(dynamicList as List<dynamic>?),
+
+      if (dynamicListFieldValue != null) 'dynamicList': dynamicListFieldValue,
+
+      if (boolSet != _sentinel)
+        'boolSet': ((Set<bool>? x) =>
+            (x as Set?)?.toList())(boolSet as Set<bool>?),
+
+      if (boolSetFieldValue != null) 'boolSet': boolSetFieldValue,
+
+      if (enumValue != _sentinel)
+        'enumValue': ((TestEnum x) =>
+            _firestoreEnumMap_TestEnum[x]!)(enumValue as TestEnum),
+
+      if (enumValueFieldValue != null) 'enumValue': enumValueFieldValue,
+
+      if (nullableEnumValue != _sentinel)
+        'nullableEnumValue': ((TestEnum? x) =>
+            _firestoreEnumMap_TestEnum[x]!)(nullableEnumValue as TestEnum?),
+
+      if (nullableEnumValueFieldValue != null)
+        'nullableEnumValue': nullableEnumValueFieldValue,
+
+      if (enumList != _sentinel)
+        'enumList': ((List<TestEnum> x) => (x as List?)
+            ?.map((e) => _firestoreEnumMap_TestEnum[e]!)
+            .toList())(enumList as List<TestEnum>),
+
+      if (enumListFieldValue != null) 'enumList': enumListFieldValue,
+
+      if (nullableEnumList != _sentinel)
+        'nullableEnumList': ((List<TestEnum>? x) => (x as List?)
+            ?.map((e) => _firestoreEnumMap_TestEnum[e]!)
+            .toList())(nullableEnumList as List<TestEnum>?),
+
+      if (nullableEnumListFieldValue != null)
+        'nullableEnumList': nullableEnumListFieldValue,
+    };
+
+    batch.update(reference, json);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is NestedDocumentReference &&
+        other.runtimeType == runtimeType &&
+        other.parent == parent &&
+        other.id == id;
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, parent, id);
+}
+
+abstract class NestedQuery
+    implements QueryReference<Nested, NestedQuerySnapshot> {
+  @override
+  NestedQuery limit(int limit);
+
+  @override
+  NestedQuery limitToLast(int limit);
+
+  /// Perform a where query based on a [FieldPath].
+  ///
+  /// This method is considered unsafe as it does check that the field path
+  /// maps to a valid property or that parameters such as [isEqualTo] receive
+  /// a value of the correct type.
+  ///
+  /// If possible, instead use the more explicit variant of where queries:
+  ///
+  /// **AVOID**:
+  /// ```dart
+  /// collection.whereFieldPath(FieldPath.fromString('title'), isEqualTo: 'title');
+  /// ```
+  ///
+  /// **PREFER**:
+  /// ```dart
+  /// collection.whereTitle(isEqualTo: 'title');
+  /// ```
+  NestedQuery whereFieldPath(
+    Object fieldPath, {
+    Object? isEqualTo,
+    Object? isNotEqualTo,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    Object? arrayContains,
+    List<Object?>? arrayContainsAny,
+    List<Object?>? whereIn,
+    List<Object?>? whereNotIn,
+    bool? isNull,
+  });
+
+  NestedQuery whereDocumentId({
+    String? isEqualTo,
+    String? isNotEqualTo,
+    String? isLessThan,
+    String? isLessThanOrEqualTo,
+    String? isGreaterThan,
+    String? isGreaterThanOrEqualTo,
+    List<String>? whereIn,
+    List<String>? whereNotIn,
+    bool? isNull,
+  });
+
+  NestedQuery whereValue({
+    Nested? isEqualTo,
+    Nested? isNotEqualTo,
+    Nested? isLessThan,
+    Nested? isLessThanOrEqualTo,
+    Nested? isGreaterThan,
+    Nested? isGreaterThanOrEqualTo,
+    List<Nested?>? whereIn,
+    List<Nested?>? whereNotIn,
+    bool? isNull,
+  });
+
+  NestedQuery whereSimple({
+    int? isEqualTo,
+    int? isNotEqualTo,
+    int? isLessThan,
+    int? isLessThanOrEqualTo,
+    int? isGreaterThan,
+    int? isGreaterThanOrEqualTo,
+    List<int?>? whereIn,
+    List<int?>? whereNotIn,
+    bool? isNull,
+  });
+
+  NestedQuery whereValueList({
+    List<Nested>? isEqualTo,
+    List<Nested>? isNotEqualTo,
+    List<Nested>? isLessThan,
+    List<Nested>? isLessThanOrEqualTo,
+    List<Nested>? isGreaterThan,
+    List<Nested>? isGreaterThanOrEqualTo,
+    Nested? arrayContains,
+    List<Nested>? arrayContainsAny,
+    bool? isNull,
+  });
+
+  NestedQuery whereBoolList({
+    List<bool>? isEqualTo,
+    List<bool>? isNotEqualTo,
+    List<bool>? isLessThan,
+    List<bool>? isLessThanOrEqualTo,
+    List<bool>? isGreaterThan,
+    List<bool>? isGreaterThanOrEqualTo,
+    bool? arrayContains,
+    List<bool>? arrayContainsAny,
+    bool? isNull,
+  });
+
+  NestedQuery whereStringList({
+    List<String>? isEqualTo,
+    List<String>? isNotEqualTo,
+    List<String>? isLessThan,
+    List<String>? isLessThanOrEqualTo,
+    List<String>? isGreaterThan,
+    List<String>? isGreaterThanOrEqualTo,
+    String? arrayContains,
+    List<String>? arrayContainsAny,
+    bool? isNull,
+  });
+
+  NestedQuery whereNumList({
+    List<num>? isEqualTo,
+    List<num>? isNotEqualTo,
+    List<num>? isLessThan,
+    List<num>? isLessThanOrEqualTo,
+    List<num>? isGreaterThan,
+    List<num>? isGreaterThanOrEqualTo,
+    num? arrayContains,
+    List<num>? arrayContainsAny,
+    bool? isNull,
+  });
+
+  NestedQuery whereObjectList({
+    List<Object?>? isEqualTo,
+    List<Object?>? isNotEqualTo,
+    List<Object?>? isLessThan,
+    List<Object?>? isLessThanOrEqualTo,
+    List<Object?>? isGreaterThan,
+    List<Object?>? isGreaterThanOrEqualTo,
+    Object? arrayContains,
+    List<Object?>? arrayContainsAny,
+    bool? isNull,
+  });
+
+  NestedQuery whereDynamicList({
+    List<dynamic>? isEqualTo,
+    List<dynamic>? isNotEqualTo,
+    List<dynamic>? isLessThan,
+    List<dynamic>? isLessThanOrEqualTo,
+    List<dynamic>? isGreaterThan,
+    List<dynamic>? isGreaterThanOrEqualTo,
+    dynamic arrayContains,
+    List<dynamic>? arrayContainsAny,
+    bool? isNull,
+  });
+
+  NestedQuery whereBoolSet({
+    Set<bool>? isEqualTo,
+    Set<bool>? isNotEqualTo,
+    Set<bool>? isLessThan,
+    Set<bool>? isLessThanOrEqualTo,
+    Set<bool>? isGreaterThan,
+    Set<bool>? isGreaterThanOrEqualTo,
+    bool? arrayContains,
+    Set<bool>? arrayContainsAny,
+    bool? isNull,
+  });
+
+  NestedQuery whereEnumValue({
+    TestEnum? isEqualTo,
+    TestEnum? isNotEqualTo,
+    TestEnum? isLessThan,
+    TestEnum? isLessThanOrEqualTo,
+    TestEnum? isGreaterThan,
+    TestEnum? isGreaterThanOrEqualTo,
+    List<TestEnum>? whereIn,
+    List<TestEnum>? whereNotIn,
+    bool? isNull,
+  });
+
+  NestedQuery whereNullableEnumValue({
+    TestEnum? isEqualTo,
+    TestEnum? isNotEqualTo,
+    TestEnum? isLessThan,
+    TestEnum? isLessThanOrEqualTo,
+    TestEnum? isGreaterThan,
+    TestEnum? isGreaterThanOrEqualTo,
+    List<TestEnum?>? whereIn,
+    List<TestEnum?>? whereNotIn,
+    bool? isNull,
+  });
+
+  NestedQuery whereEnumList({
+    List<TestEnum>? isEqualTo,
+    List<TestEnum>? isNotEqualTo,
+    List<TestEnum>? isLessThan,
+    List<TestEnum>? isLessThanOrEqualTo,
+    List<TestEnum>? isGreaterThan,
+    List<TestEnum>? isGreaterThanOrEqualTo,
+    TestEnum? arrayContains,
+    List<TestEnum>? arrayContainsAny,
+    bool? isNull,
+  });
+
+  NestedQuery whereNullableEnumList({
+    List<TestEnum>? isEqualTo,
+    List<TestEnum>? isNotEqualTo,
+    List<TestEnum>? isLessThan,
+    List<TestEnum>? isLessThanOrEqualTo,
+    List<TestEnum>? isGreaterThan,
+    List<TestEnum>? isGreaterThanOrEqualTo,
+    TestEnum? arrayContains,
+    List<TestEnum>? arrayContainsAny,
+    bool? isNull,
+  });
+
+  /// Perform an order query based on a [FieldPath].
+  ///
+  /// This method is considered unsafe as it does check that the field path
+  /// maps to a valid property or that parameters such as [isEqualTo] receive
+  /// a value of the correct type.
+  ///
+  /// If possible, instead use the more explicit variant of order queries:
+  ///
+  /// **AVOID**:
+  /// ```dart
+  /// collection.orderByFieldPath(
+  ///   FieldPath.fromString('title'),
+  ///   startAt: 'title',
+  /// );
+  /// ```
+  ///
+  /// **PREFER**:
+  /// ```dart
+  /// collection.orderByTitle(startAt: 'title');
+  /// ```
+  NestedQuery orderByFieldPath(
+    Object fieldPath, {
+    bool descending = false,
+    Object startAt,
+    Object startAfter,
+    Object endAt,
+    Object endBefore,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  });
+
+  NestedQuery orderByDocumentId({
+    bool descending = false,
+    String startAt,
+    String startAfter,
+    String endAt,
+    String endBefore,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  });
+
+  NestedQuery orderByValue({
+    bool descending = false,
+    Nested? startAt,
+    Nested? startAfter,
+    Nested? endAt,
+    Nested? endBefore,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  });
+
+  NestedQuery orderBySimple({
+    bool descending = false,
+    int? startAt,
+    int? startAfter,
+    int? endAt,
+    int? endBefore,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  });
+
+  NestedQuery orderByValueList({
+    bool descending = false,
+    List<Nested>? startAt,
+    List<Nested>? startAfter,
+    List<Nested>? endAt,
+    List<Nested>? endBefore,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  });
+
+  NestedQuery orderByBoolList({
+    bool descending = false,
+    List<bool>? startAt,
+    List<bool>? startAfter,
+    List<bool>? endAt,
+    List<bool>? endBefore,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  });
+
+  NestedQuery orderByStringList({
+    bool descending = false,
+    List<String>? startAt,
+    List<String>? startAfter,
+    List<String>? endAt,
+    List<String>? endBefore,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  });
+
+  NestedQuery orderByNumList({
+    bool descending = false,
+    List<num>? startAt,
+    List<num>? startAfter,
+    List<num>? endAt,
+    List<num>? endBefore,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  });
+
+  NestedQuery orderByObjectList({
+    bool descending = false,
+    List<Object?>? startAt,
+    List<Object?>? startAfter,
+    List<Object?>? endAt,
+    List<Object?>? endBefore,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  });
+
+  NestedQuery orderByDynamicList({
+    bool descending = false,
+    List<dynamic>? startAt,
+    List<dynamic>? startAfter,
+    List<dynamic>? endAt,
+    List<dynamic>? endBefore,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  });
+
+  NestedQuery orderByBoolSet({
+    bool descending = false,
+    Set<bool>? startAt,
+    Set<bool>? startAfter,
+    Set<bool>? endAt,
+    Set<bool>? endBefore,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  });
+
+  NestedQuery orderByEnumValue({
+    bool descending = false,
+    TestEnum startAt,
+    TestEnum startAfter,
+    TestEnum endAt,
+    TestEnum endBefore,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  });
+
+  NestedQuery orderByNullableEnumValue({
+    bool descending = false,
+    TestEnum? startAt,
+    TestEnum? startAfter,
+    TestEnum? endAt,
+    TestEnum? endBefore,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  });
+
+  NestedQuery orderByEnumList({
+    bool descending = false,
+    List<TestEnum> startAt,
+    List<TestEnum> startAfter,
+    List<TestEnum> endAt,
+    List<TestEnum> endBefore,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  });
+
+  NestedQuery orderByNullableEnumList({
+    bool descending = false,
+    List<TestEnum>? startAt,
+    List<TestEnum>? startAfter,
+    List<TestEnum>? endAt,
+    List<TestEnum>? endBefore,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  });
+}
+
+class _$NestedQuery extends QueryReference<Nested, NestedQuerySnapshot>
+    implements NestedQuery {
+  _$NestedQuery(
+    this._collection, {
+    required Query<Nested> $referenceWithoutCursor,
+    $QueryCursor $queryCursor = const $QueryCursor(),
+  }) : super(
+         $referenceWithoutCursor: $referenceWithoutCursor,
+         $queryCursor: $queryCursor,
+       );
+
+  final CollectionReference<Object?> _collection;
+
+  @override
+  Stream<NestedQuerySnapshot> snapshots([SnapshotOptions? options]) {
+    return reference.snapshots().map(NestedQuerySnapshot._fromQuerySnapshot);
+  }
+
+  @override
+  Future<NestedQuerySnapshot> get([GetOptions? options]) {
+    return reference.get(options).then(NestedQuerySnapshot._fromQuerySnapshot);
+  }
+
+  @override
+  NestedQuery limit(int limit) {
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.limit(limit),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery limitToLast(int limit) {
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.limitToLast(limit),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery whereFieldPath(
+    Object fieldPath, {
+    Object? isEqualTo = _sentinel,
+    Object? isNotEqualTo = _sentinel,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    Object? arrayContains,
+    List<Object?>? arrayContainsAny,
+    List<Object?>? whereIn,
+    List<Object?>? whereNotIn,
+    bool? isNull,
+  }) {
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        fieldPath,
+        isEqualTo: isEqualTo != _sentinel ? isEqualTo : null,
+        isNotEqualTo: isNotEqualTo != _sentinel ? isNotEqualTo : null,
+        isLessThan: isLessThan,
+        isLessThanOrEqualTo: isLessThanOrEqualTo,
+        isGreaterThan: isGreaterThan,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
+        arrayContains: arrayContains,
+        arrayContainsAny: arrayContainsAny,
+        whereIn: whereIn,
+        whereNotIn: whereNotIn,
+        isNull:
+            isNull ??
+            (isEqualTo == null ? false : null) ??
+            (isNotEqualTo == null ? true : null),
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery whereDocumentId({
+    Object? isEqualTo = _sentinel,
+    Object? isNotEqualTo = _sentinel,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    List<String>? whereIn,
+    List<String>? whereNotIn,
+    bool? isNull,
+  }) {
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        FieldPath.documentId,
+        isEqualTo: isEqualTo != _sentinel ? isEqualTo : null,
+        isNotEqualTo: isNotEqualTo != _sentinel ? isNotEqualTo : null,
+        isLessThan: isLessThan,
+        isLessThanOrEqualTo: isLessThanOrEqualTo,
+        isGreaterThan: isGreaterThan,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
+        whereIn: whereIn,
+        whereNotIn: whereNotIn,
+        isNull:
+            isNull ??
+            (isEqualTo == null ? false : null) ??
+            (isNotEqualTo == null ? true : null),
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery whereValue({
+    Object? isEqualTo = _sentinel,
+    Object? isNotEqualTo = _sentinel,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    List<Nested?>? whereIn,
+    List<Nested?>? whereNotIn,
+    bool? isNull,
+  }) {
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        'value',
+        isEqualTo: isEqualTo != _sentinel
+            ? ((Nested? x) => x?.toJson())(isEqualTo as Nested?)
+            : null,
+        isNotEqualTo: isNotEqualTo != _sentinel
+            ? ((Nested? x) => x?.toJson())(isNotEqualTo as Nested?)
+            : null,
+        isLessThan: isLessThan != null
+            ? ((Nested? x) => x?.toJson())(isLessThan as Nested?)
+            : null,
+        isLessThanOrEqualTo: isLessThanOrEqualTo != null
+            ? ((Nested? x) => x?.toJson())(isLessThanOrEqualTo as Nested?)
+            : null,
+        isGreaterThan: isGreaterThan != null
+            ? ((Nested? x) => x?.toJson())(isGreaterThan as Nested?)
+            : null,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo != null
+            ? ((Nested? x) => x?.toJson())(isGreaterThanOrEqualTo as Nested?)
+            : null,
+        whereIn: whereIn?.map((e) => ((Nested? x) => x?.toJson())(e)),
+        whereNotIn: whereNotIn?.map((e) => ((Nested? x) => x?.toJson())(e)),
+        isNull:
+            isNull ??
+            (isEqualTo == null ? false : null) ??
+            (isNotEqualTo == null ? true : null),
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery whereSimple({
+    Object? isEqualTo = _sentinel,
+    Object? isNotEqualTo = _sentinel,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    List<int?>? whereIn,
+    List<int?>? whereNotIn,
+    bool? isNull,
+  }) {
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        'simple',
+        isEqualTo: isEqualTo != _sentinel
+            ? ((Object? x) => x)(isEqualTo as int?)
+            : null,
+        isNotEqualTo: isNotEqualTo != _sentinel
+            ? ((Object? x) => x)(isNotEqualTo as int?)
+            : null,
+        isLessThan: isLessThan != null
+            ? ((Object? x) => x)(isLessThan as int?)
+            : null,
+        isLessThanOrEqualTo: isLessThanOrEqualTo != null
+            ? ((Object? x) => x)(isLessThanOrEqualTo as int?)
+            : null,
+        isGreaterThan: isGreaterThan != null
+            ? ((Object? x) => x)(isGreaterThan as int?)
+            : null,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo != null
+            ? ((Object? x) => x)(isGreaterThanOrEqualTo as int?)
+            : null,
+        whereIn: whereIn?.map((e) => ((Object? x) => x)(e)),
+        whereNotIn: whereNotIn?.map((e) => ((Object? x) => x)(e)),
+        isNull:
+            isNull ??
+            (isEqualTo == null ? false : null) ??
+            (isNotEqualTo == null ? true : null),
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery whereValueList({
+    Object? isEqualTo = _sentinel,
+    Object? isNotEqualTo = _sentinel,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    Object? arrayContains,
+    List<Nested>? arrayContainsAny,
+    bool? isNull,
+  }) {
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        'valueList',
+        isEqualTo: isEqualTo != _sentinel
+            ? ((List<Nested>? x) => (x as List?)
+                  ?.map((e) => e.toJson())
+                  .toList())(isEqualTo as List<Nested>?)
+            : null,
+        isNotEqualTo: isNotEqualTo != _sentinel
+            ? ((List<Nested>? x) => (x as List?)
+                  ?.map((e) => e.toJson())
+                  .toList())(isNotEqualTo as List<Nested>?)
+            : null,
+        isLessThan: isLessThan != null
+            ? ((List<Nested>? x) => (x as List?)
+                  ?.map((e) => e.toJson())
+                  .toList())(isLessThan as List<Nested>?)
+            : null,
+        isLessThanOrEqualTo: isLessThanOrEqualTo != null
+            ? ((List<Nested>? x) => (x as List?)
+                  ?.map((e) => e.toJson())
+                  .toList())(isLessThanOrEqualTo as List<Nested>?)
+            : null,
+        isGreaterThan: isGreaterThan != null
+            ? ((List<Nested>? x) => (x as List?)
+                  ?.map((e) => e.toJson())
+                  .toList())(isGreaterThan as List<Nested>?)
+            : null,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo != null
+            ? ((List<Nested>? x) => (x as List?)
+                  ?.map((e) => e.toJson())
+                  .toList())(isGreaterThanOrEqualTo as List<Nested>?)
+            : null,
+        arrayContains: arrayContains != null
+            ? (((List<Nested>? x) => (x as List?)
+                          ?.map((e) => e.toJson())
+                          .toList())([arrayContains as Nested])
+                      as List?)!
+                  .single
+            : null,
+        arrayContainsAny: arrayContainsAny != null
+            ? ((List<Nested>? x) => (x as List?)
+                      ?.map((e) => e.toJson())
+                      .toList())(arrayContainsAny)
+                  as Iterable<Object>?
+            : null,
+        isNull:
+            isNull ??
+            (isEqualTo == null ? false : null) ??
+            (isNotEqualTo == null ? true : null),
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery whereBoolList({
+    Object? isEqualTo = _sentinel,
+    Object? isNotEqualTo = _sentinel,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    Object? arrayContains,
+    List<bool>? arrayContainsAny,
+    bool? isNull,
+  }) {
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        'boolList',
+        isEqualTo: isEqualTo != _sentinel
+            ? ((Object? x) => x)(isEqualTo as List<bool>?)
+            : null,
+        isNotEqualTo: isNotEqualTo != _sentinel
+            ? ((Object? x) => x)(isNotEqualTo as List<bool>?)
+            : null,
+        isLessThan: isLessThan != null
+            ? ((Object? x) => x)(isLessThan as List<bool>?)
+            : null,
+        isLessThanOrEqualTo: isLessThanOrEqualTo != null
+            ? ((Object? x) => x)(isLessThanOrEqualTo as List<bool>?)
+            : null,
+        isGreaterThan: isGreaterThan != null
+            ? ((Object? x) => x)(isGreaterThan as List<bool>?)
+            : null,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo != null
+            ? ((Object? x) => x)(isGreaterThanOrEqualTo as List<bool>?)
+            : null,
+        arrayContains: arrayContains != null
+            ? (((Object? x) => x)([arrayContains as bool]) as List?)!.single
+            : null,
+        arrayContainsAny: arrayContainsAny != null
+            ? ((Object? x) => x)(arrayContainsAny) as Iterable<Object>?
+            : null,
+        isNull:
+            isNull ??
+            (isEqualTo == null ? false : null) ??
+            (isNotEqualTo == null ? true : null),
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery whereStringList({
+    Object? isEqualTo = _sentinel,
+    Object? isNotEqualTo = _sentinel,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    Object? arrayContains,
+    List<String>? arrayContainsAny,
+    bool? isNull,
+  }) {
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        'stringList',
+        isEqualTo: isEqualTo != _sentinel
+            ? ((Object? x) => x)(isEqualTo as List<String>?)
+            : null,
+        isNotEqualTo: isNotEqualTo != _sentinel
+            ? ((Object? x) => x)(isNotEqualTo as List<String>?)
+            : null,
+        isLessThan: isLessThan != null
+            ? ((Object? x) => x)(isLessThan as List<String>?)
+            : null,
+        isLessThanOrEqualTo: isLessThanOrEqualTo != null
+            ? ((Object? x) => x)(isLessThanOrEqualTo as List<String>?)
+            : null,
+        isGreaterThan: isGreaterThan != null
+            ? ((Object? x) => x)(isGreaterThan as List<String>?)
+            : null,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo != null
+            ? ((Object? x) => x)(isGreaterThanOrEqualTo as List<String>?)
+            : null,
+        arrayContains: arrayContains != null
+            ? (((Object? x) => x)([arrayContains as String]) as List?)!.single
+            : null,
+        arrayContainsAny: arrayContainsAny != null
+            ? ((Object? x) => x)(arrayContainsAny) as Iterable<Object>?
+            : null,
+        isNull:
+            isNull ??
+            (isEqualTo == null ? false : null) ??
+            (isNotEqualTo == null ? true : null),
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery whereNumList({
+    Object? isEqualTo = _sentinel,
+    Object? isNotEqualTo = _sentinel,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    Object? arrayContains,
+    List<num>? arrayContainsAny,
+    bool? isNull,
+  }) {
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        'numList',
+        isEqualTo: isEqualTo != _sentinel
+            ? ((Object? x) => x)(isEqualTo as List<num>?)
+            : null,
+        isNotEqualTo: isNotEqualTo != _sentinel
+            ? ((Object? x) => x)(isNotEqualTo as List<num>?)
+            : null,
+        isLessThan: isLessThan != null
+            ? ((Object? x) => x)(isLessThan as List<num>?)
+            : null,
+        isLessThanOrEqualTo: isLessThanOrEqualTo != null
+            ? ((Object? x) => x)(isLessThanOrEqualTo as List<num>?)
+            : null,
+        isGreaterThan: isGreaterThan != null
+            ? ((Object? x) => x)(isGreaterThan as List<num>?)
+            : null,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo != null
+            ? ((Object? x) => x)(isGreaterThanOrEqualTo as List<num>?)
+            : null,
+        arrayContains: arrayContains != null
+            ? (((Object? x) => x)([arrayContains as num]) as List?)!.single
+            : null,
+        arrayContainsAny: arrayContainsAny != null
+            ? ((Object? x) => x)(arrayContainsAny) as Iterable<Object>?
+            : null,
+        isNull:
+            isNull ??
+            (isEqualTo == null ? false : null) ??
+            (isNotEqualTo == null ? true : null),
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery whereObjectList({
+    Object? isEqualTo = _sentinel,
+    Object? isNotEqualTo = _sentinel,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    Object? arrayContains,
+    List<Object?>? arrayContainsAny,
+    bool? isNull,
+  }) {
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        'objectList',
+        isEqualTo: isEqualTo != _sentinel
+            ? ((Object? x) => x)(isEqualTo as List<Object?>?)
+            : null,
+        isNotEqualTo: isNotEqualTo != _sentinel
+            ? ((Object? x) => x)(isNotEqualTo as List<Object?>?)
+            : null,
+        isLessThan: isLessThan != null
+            ? ((Object? x) => x)(isLessThan as List<Object?>?)
+            : null,
+        isLessThanOrEqualTo: isLessThanOrEqualTo != null
+            ? ((Object? x) => x)(isLessThanOrEqualTo as List<Object?>?)
+            : null,
+        isGreaterThan: isGreaterThan != null
+            ? ((Object? x) => x)(isGreaterThan as List<Object?>?)
+            : null,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo != null
+            ? ((Object? x) => x)(isGreaterThanOrEqualTo as List<Object?>?)
+            : null,
+        arrayContains: arrayContains != null
+            ? (((Object? x) => x)([arrayContains]) as List?)!.single
+            : null,
+        arrayContainsAny: arrayContainsAny != null
+            ? ((Object? x) => x)(arrayContainsAny) as Iterable<Object>?
+            : null,
+        isNull:
+            isNull ??
+            (isEqualTo == null ? false : null) ??
+            (isNotEqualTo == null ? true : null),
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery whereDynamicList({
+    Object? isEqualTo = _sentinel,
+    Object? isNotEqualTo = _sentinel,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    Object? arrayContains,
+    List<dynamic>? arrayContainsAny,
+    bool? isNull,
+  }) {
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        'dynamicList',
+        isEqualTo: isEqualTo != _sentinel
+            ? ((Object? x) => x)(isEqualTo as List<dynamic>?)
+            : null,
+        isNotEqualTo: isNotEqualTo != _sentinel
+            ? ((Object? x) => x)(isNotEqualTo as List<dynamic>?)
+            : null,
+        isLessThan: isLessThan != null
+            ? ((Object? x) => x)(isLessThan as List<dynamic>?)
+            : null,
+        isLessThanOrEqualTo: isLessThanOrEqualTo != null
+            ? ((Object? x) => x)(isLessThanOrEqualTo as List<dynamic>?)
+            : null,
+        isGreaterThan: isGreaterThan != null
+            ? ((Object? x) => x)(isGreaterThan as List<dynamic>?)
+            : null,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo != null
+            ? ((Object? x) => x)(isGreaterThanOrEqualTo as List<dynamic>?)
+            : null,
+        arrayContains: arrayContains != null
+            ? (((Object? x) => x)([arrayContains as dynamic]) as List?)!.single
+            : null,
+        arrayContainsAny: arrayContainsAny != null
+            ? ((Object? x) => x)(arrayContainsAny) as Iterable<Object>?
+            : null,
+        isNull:
+            isNull ??
+            (isEqualTo == null ? false : null) ??
+            (isNotEqualTo == null ? true : null),
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery whereBoolSet({
+    Object? isEqualTo = _sentinel,
+    Object? isNotEqualTo = _sentinel,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    Object? arrayContains,
+    Set<bool>? arrayContainsAny,
+    bool? isNull,
+  }) {
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        'boolSet',
+        isEqualTo: isEqualTo != _sentinel
+            ? ((Set<bool>? x) => (x as Set?)?.toList())(isEqualTo as Set<bool>?)
+            : null,
+        isNotEqualTo: isNotEqualTo != _sentinel
+            ? ((Set<bool>? x) =>
+                  (x as Set?)?.toList())(isNotEqualTo as Set<bool>?)
+            : null,
+        isLessThan: isLessThan != null
+            ? ((Set<bool>? x) =>
+                  (x as Set?)?.toList())(isLessThan as Set<bool>?)
+            : null,
+        isLessThanOrEqualTo: isLessThanOrEqualTo != null
+            ? ((Set<bool>? x) =>
+                  (x as Set?)?.toList())(isLessThanOrEqualTo as Set<bool>?)
+            : null,
+        isGreaterThan: isGreaterThan != null
+            ? ((Set<bool>? x) =>
+                  (x as Set?)?.toList())(isGreaterThan as Set<bool>?)
+            : null,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo != null
+            ? ((Set<bool>? x) =>
+                  (x as Set?)?.toList())(isGreaterThanOrEqualTo as Set<bool>?)
+            : null,
+        arrayContains: arrayContains != null
+            ? (((Set<bool>? x) =>
+                          (x as Set?)?.toList())({arrayContains as bool})
+                      as List?)!
+                  .single
+            : null,
+        arrayContainsAny: arrayContainsAny != null
+            ? ((Set<bool>? x) => (x as Set?)?.toList())(arrayContainsAny)
+                  as Iterable<Object>?
+            : null,
+        isNull:
+            isNull ??
+            (isEqualTo == null ? false : null) ??
+            (isNotEqualTo == null ? true : null),
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery whereEnumValue({
+    Object? isEqualTo = _sentinel,
+    Object? isNotEqualTo = _sentinel,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    List<TestEnum>? whereIn,
+    List<TestEnum>? whereNotIn,
+    bool? isNull,
+  }) {
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        'enumValue',
+        isEqualTo: isEqualTo != _sentinel
+            ? ((TestEnum x) =>
+                  _firestoreEnumMap_TestEnum[x]!)(isEqualTo as TestEnum)
+            : null,
+        isNotEqualTo: isNotEqualTo != _sentinel
+            ? ((TestEnum x) =>
+                  _firestoreEnumMap_TestEnum[x]!)(isNotEqualTo as TestEnum)
+            : null,
+        isLessThan: isLessThan != null
+            ? ((TestEnum x) =>
+                  _firestoreEnumMap_TestEnum[x]!)(isLessThan as TestEnum)
+            : null,
+        isLessThanOrEqualTo: isLessThanOrEqualTo != null
+            ? ((TestEnum x) => _firestoreEnumMap_TestEnum[x]!)(
+                isLessThanOrEqualTo as TestEnum,
+              )
+            : null,
+        isGreaterThan: isGreaterThan != null
+            ? ((TestEnum x) =>
+                  _firestoreEnumMap_TestEnum[x]!)(isGreaterThan as TestEnum)
+            : null,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo != null
+            ? ((TestEnum x) => _firestoreEnumMap_TestEnum[x]!)(
+                isGreaterThanOrEqualTo as TestEnum,
+              )
+            : null,
+        whereIn: whereIn?.map(
+          (e) => ((TestEnum x) => _firestoreEnumMap_TestEnum[x]!)(e),
+        ),
+        whereNotIn: whereNotIn?.map(
+          (e) => ((TestEnum x) => _firestoreEnumMap_TestEnum[x]!)(e),
+        ),
+        isNull:
+            isNull ??
+            (isEqualTo == null ? false : null) ??
+            (isNotEqualTo == null ? true : null),
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery whereNullableEnumValue({
+    Object? isEqualTo = _sentinel,
+    Object? isNotEqualTo = _sentinel,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    List<TestEnum?>? whereIn,
+    List<TestEnum?>? whereNotIn,
+    bool? isNull,
+  }) {
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        'nullableEnumValue',
+        isEqualTo: isEqualTo != _sentinel
+            ? ((TestEnum? x) =>
+                  _firestoreEnumMap_TestEnum[x]!)(isEqualTo as TestEnum?)
+            : null,
+        isNotEqualTo: isNotEqualTo != _sentinel
+            ? ((TestEnum? x) =>
+                  _firestoreEnumMap_TestEnum[x]!)(isNotEqualTo as TestEnum?)
+            : null,
+        isLessThan: isLessThan != null
+            ? ((TestEnum? x) =>
+                  _firestoreEnumMap_TestEnum[x]!)(isLessThan as TestEnum?)
+            : null,
+        isLessThanOrEqualTo: isLessThanOrEqualTo != null
+            ? ((TestEnum? x) => _firestoreEnumMap_TestEnum[x]!)(
+                isLessThanOrEqualTo as TestEnum?,
+              )
+            : null,
+        isGreaterThan: isGreaterThan != null
+            ? ((TestEnum? x) =>
+                  _firestoreEnumMap_TestEnum[x]!)(isGreaterThan as TestEnum?)
+            : null,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo != null
+            ? ((TestEnum? x) => _firestoreEnumMap_TestEnum[x]!)(
+                isGreaterThanOrEqualTo as TestEnum?,
+              )
+            : null,
+        whereIn: whereIn?.map(
+          (e) => ((TestEnum? x) => _firestoreEnumMap_TestEnum[x]!)(e),
+        ),
+        whereNotIn: whereNotIn?.map(
+          (e) => ((TestEnum? x) => _firestoreEnumMap_TestEnum[x]!)(e),
+        ),
+        isNull:
+            isNull ??
+            (isEqualTo == null ? false : null) ??
+            (isNotEqualTo == null ? true : null),
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery whereEnumList({
+    Object? isEqualTo = _sentinel,
+    Object? isNotEqualTo = _sentinel,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    Object? arrayContains,
+    List<TestEnum>? arrayContainsAny,
+    bool? isNull,
+  }) {
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        'enumList',
+        isEqualTo: isEqualTo != _sentinel
+            ? ((List<TestEnum> x) => (x as List?)
+                  ?.map((e) => _firestoreEnumMap_TestEnum[e]!)
+                  .toList())(isEqualTo as List<TestEnum>)
+            : null,
+        isNotEqualTo: isNotEqualTo != _sentinel
+            ? ((List<TestEnum> x) => (x as List?)
+                  ?.map((e) => _firestoreEnumMap_TestEnum[e]!)
+                  .toList())(isNotEqualTo as List<TestEnum>)
+            : null,
+        isLessThan: isLessThan != null
+            ? ((List<TestEnum> x) => (x as List?)
+                  ?.map((e) => _firestoreEnumMap_TestEnum[e]!)
+                  .toList())(isLessThan as List<TestEnum>)
+            : null,
+        isLessThanOrEqualTo: isLessThanOrEqualTo != null
+            ? ((List<TestEnum> x) => (x as List?)
+                  ?.map((e) => _firestoreEnumMap_TestEnum[e]!)
+                  .toList())(isLessThanOrEqualTo as List<TestEnum>)
+            : null,
+        isGreaterThan: isGreaterThan != null
+            ? ((List<TestEnum> x) => (x as List?)
+                  ?.map((e) => _firestoreEnumMap_TestEnum[e]!)
+                  .toList())(isGreaterThan as List<TestEnum>)
+            : null,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo != null
+            ? ((List<TestEnum> x) => (x as List?)
+                  ?.map((e) => _firestoreEnumMap_TestEnum[e]!)
+                  .toList())(isGreaterThanOrEqualTo as List<TestEnum>)
+            : null,
+        arrayContains: arrayContains != null
+            ? (((List<TestEnum> x) => (x as List?)
+                          ?.map((e) => _firestoreEnumMap_TestEnum[e]!)
+                          .toList())([arrayContains as TestEnum])
+                      as List?)!
+                  .single
+            : null,
+        arrayContainsAny: arrayContainsAny != null
+            ? ((List<TestEnum> x) => (x as List?)
+                      ?.map((e) => _firestoreEnumMap_TestEnum[e]!)
+                      .toList())(arrayContainsAny)
+                  as Iterable<Object>?
+            : null,
+        isNull:
+            isNull ??
+            (isEqualTo == null ? false : null) ??
+            (isNotEqualTo == null ? true : null),
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery whereNullableEnumList({
+    Object? isEqualTo = _sentinel,
+    Object? isNotEqualTo = _sentinel,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    Object? arrayContains,
+    List<TestEnum>? arrayContainsAny,
+    bool? isNull,
+  }) {
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        'nullableEnumList',
+        isEqualTo: isEqualTo != _sentinel
+            ? ((List<TestEnum>? x) => (x as List?)
+                  ?.map((e) => _firestoreEnumMap_TestEnum[e]!)
+                  .toList())(isEqualTo as List<TestEnum>?)
+            : null,
+        isNotEqualTo: isNotEqualTo != _sentinel
+            ? ((List<TestEnum>? x) => (x as List?)
+                  ?.map((e) => _firestoreEnumMap_TestEnum[e]!)
+                  .toList())(isNotEqualTo as List<TestEnum>?)
+            : null,
+        isLessThan: isLessThan != null
+            ? ((List<TestEnum>? x) => (x as List?)
+                  ?.map((e) => _firestoreEnumMap_TestEnum[e]!)
+                  .toList())(isLessThan as List<TestEnum>?)
+            : null,
+        isLessThanOrEqualTo: isLessThanOrEqualTo != null
+            ? ((List<TestEnum>? x) => (x as List?)
+                  ?.map((e) => _firestoreEnumMap_TestEnum[e]!)
+                  .toList())(isLessThanOrEqualTo as List<TestEnum>?)
+            : null,
+        isGreaterThan: isGreaterThan != null
+            ? ((List<TestEnum>? x) => (x as List?)
+                  ?.map((e) => _firestoreEnumMap_TestEnum[e]!)
+                  .toList())(isGreaterThan as List<TestEnum>?)
+            : null,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo != null
+            ? ((List<TestEnum>? x) => (x as List?)
+                  ?.map((e) => _firestoreEnumMap_TestEnum[e]!)
+                  .toList())(isGreaterThanOrEqualTo as List<TestEnum>?)
+            : null,
+        arrayContains: arrayContains != null
+            ? (((List<TestEnum>? x) => (x as List?)
+                          ?.map((e) => _firestoreEnumMap_TestEnum[e]!)
+                          .toList())([arrayContains as TestEnum])
+                      as List?)!
+                  .single
+            : null,
+        arrayContainsAny: arrayContainsAny != null
+            ? ((List<TestEnum>? x) => (x as List?)
+                      ?.map((e) => _firestoreEnumMap_TestEnum[e]!)
+                      .toList())(arrayContainsAny)
+                  as Iterable<Object>?
+            : null,
+        isNull:
+            isNull ??
+            (isEqualTo == null ? false : null) ??
+            (isNotEqualTo == null ? true : null),
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery orderByFieldPath(
+    Object fieldPath, {
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+      fieldPath,
+      descending: descending,
+    );
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery orderByDocumentId({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+      FieldPath.documentId,
+      descending: descending,
+    );
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery orderByValue({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+      'value',
+      descending: descending,
+    );
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery orderBySimple({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+      'simple',
+      descending: descending,
+    );
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery orderByValueList({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+      'valueList',
+      descending: descending,
+    );
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery orderByBoolList({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+      'boolList',
+      descending: descending,
+    );
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery orderByStringList({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+      'stringList',
+      descending: descending,
+    );
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery orderByNumList({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+      'numList',
+      descending: descending,
+    );
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery orderByObjectList({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+      'objectList',
+      descending: descending,
+    );
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery orderByDynamicList({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+      'dynamicList',
+      descending: descending,
+    );
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery orderByBoolSet({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+      'boolSet',
+      descending: descending,
+    );
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery orderByEnumValue({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+      'enumValue',
+      descending: descending,
+    );
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery orderByNullableEnumValue({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+      'nullableEnumValue',
+      descending: descending,
+    );
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery orderByEnumList({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+      'enumList',
+      descending: descending,
+    );
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  @override
+  NestedQuery orderByNullableEnumList({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    NestedDocumentSnapshot? startAtDocument,
+    NestedDocumentSnapshot? endAtDocument,
+    NestedDocumentSnapshot? endBeforeDocument,
+    NestedDocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+      'nullableEnumList',
+      descending: descending,
+    );
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$NestedQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is _$NestedQuery &&
+        other.runtimeType == runtimeType &&
+        other.reference == reference;
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, reference);
+}
+
+class NestedDocumentSnapshot extends FirestoreDocumentSnapshot<Nested> {
+  NestedDocumentSnapshot._(this.snapshot) : data = snapshot.data();
+
+  @override
+  final DocumentSnapshot<Nested> snapshot;
+
+  @override
+  NestedDocumentReference get reference {
+    return NestedDocumentReference(snapshot.reference);
+  }
+
+  @override
+  final Nested? data;
+}
+
+class NestedQuerySnapshot
+    extends FirestoreQuerySnapshot<Nested, NestedQueryDocumentSnapshot> {
+  NestedQuerySnapshot._(this.snapshot, this.docs, this.docChanges);
+
+  factory NestedQuerySnapshot._fromQuerySnapshot(
+    QuerySnapshot<Nested> snapshot,
+  ) {
+    final docs = snapshot.docs.map(NestedQueryDocumentSnapshot._).toList();
+
+    final docChanges = snapshot.docChanges.map((change) {
+      return _decodeDocumentChange(change, NestedDocumentSnapshot._);
+    }).toList();
+
+    return NestedQuerySnapshot._(snapshot, docs, docChanges);
+  }
+
+  static FirestoreDocumentChange<NestedDocumentSnapshot>
+  _decodeDocumentChange<T>(
+    DocumentChange<T> docChange,
+    NestedDocumentSnapshot Function(DocumentSnapshot<T> doc) decodeDoc,
+  ) {
+    return FirestoreDocumentChange<NestedDocumentSnapshot>(
+      type: docChange.type,
+      oldIndex: docChange.oldIndex,
+      newIndex: docChange.newIndex,
+      doc: decodeDoc(docChange.doc),
+    );
+  }
+
+  final QuerySnapshot<Nested> snapshot;
+
+  @override
+  final List<NestedQueryDocumentSnapshot> docs;
+
+  @override
+  final List<FirestoreDocumentChange<NestedDocumentSnapshot>> docChanges;
+}
+
+class NestedQueryDocumentSnapshot extends FirestoreQueryDocumentSnapshot<Nested>
+    implements NestedDocumentSnapshot {
+  NestedQueryDocumentSnapshot._(this.snapshot) : data = snapshot.data();
+
+  @override
+  final QueryDocumentSnapshot<Nested> snapshot;
+
+  @override
+  final Nested data;
+
+  @override
+  NestedDocumentReference get reference {
+    return NestedDocumentReference(snapshot.reference);
+  }
+}
+
 /// A collection reference object can be used for adding documents,
 /// getting document references, and querying for documents
 /// (using the methods inherited from Query).

@@ -3521,6 +3521,1099 @@ class NestedQueryDocumentSnapshot extends FirestoreQueryDocumentSnapshot<Nested>
 /// A collection reference object can be used for adding documents,
 /// getting document references, and querying for documents
 /// (using the methods inherited from Query).
+abstract class PersonCollectionReference
+    implements
+        PersonQuery,
+        FirestoreCollectionReference<Person, PersonQuerySnapshot> {
+  factory PersonCollectionReference([FirebaseFirestore? firestore]) =
+      _$PersonCollectionReference;
+
+  static Person fromFirestore(
+    DocumentSnapshot<Map<String, Object?>> snapshot,
+    SnapshotOptions? options,
+  ) {
+    return Person.fromJson(snapshot.data()!);
+  }
+
+  static Map<String, Object?> toFirestore(Person value, SetOptions? options) {
+    return value.toJson();
+  }
+
+  @override
+  CollectionReference<Person> get reference;
+
+  @override
+  PersonDocumentReference doc([String? id]);
+
+  /// Add a new document to this collection with the specified data,
+  /// assigning it a document ID automatically.
+  Future<PersonDocumentReference> add(Person value);
+}
+
+class _$PersonCollectionReference extends _$PersonQuery
+    implements PersonCollectionReference {
+  factory _$PersonCollectionReference([FirebaseFirestore? firestore]) {
+    firestore ??= FirebaseFirestore.instance;
+
+    return _$PersonCollectionReference._(
+      firestore
+          .collection('nested/**/people')
+          .withConverter(
+            fromFirestore: PersonCollectionReference.fromFirestore,
+            toFirestore: PersonCollectionReference.toFirestore,
+          ),
+    );
+  }
+
+  _$PersonCollectionReference._(CollectionReference<Person> reference)
+    : super(reference, $referenceWithoutCursor: reference);
+
+  String get path => reference.path;
+
+  @override
+  CollectionReference<Person> get reference =>
+      super.reference as CollectionReference<Person>;
+
+  @override
+  PersonDocumentReference doc([String? id]) {
+    assert(
+      id == null || id.split('/').length == 1,
+      'The document ID cannot be from a different collection',
+    );
+    return PersonDocumentReference(reference.doc(id));
+  }
+
+  @override
+  Future<PersonDocumentReference> add(Person value) {
+    return reference.add(value).then((ref) => PersonDocumentReference(ref));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is _$PersonCollectionReference &&
+        other.runtimeType == runtimeType &&
+        other.reference == reference;
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, reference);
+}
+
+abstract class PersonDocumentReference
+    extends FirestoreDocumentReference<Person, PersonDocumentSnapshot> {
+  factory PersonDocumentReference(DocumentReference<Person> reference) =
+      _$PersonDocumentReference;
+
+  DocumentReference<Person> get reference;
+
+  /// A reference to the [PersonCollectionReference] containing this document.
+  PersonCollectionReference get parent {
+    return _$PersonCollectionReference(reference.firestore);
+  }
+
+  @override
+  Stream<PersonDocumentSnapshot> snapshots();
+
+  @override
+  Future<PersonDocumentSnapshot> get([GetOptions? options]);
+
+  @override
+  Future<void> delete();
+
+  /// Sets data on the document, overwriting any existing data. If the document
+  /// does not yet exist, it will be created.
+  ///
+  /// If [SetOptions] are provided, the data can be merged into an existing
+  /// document instead of overwriting.
+  ///
+  /// Any [FieldValue]s provided will replace the corresponding fields in the
+  /// [model] during serialization.
+  Future<void> set(
+    Person model, {
+    SetOptions? options,
+    FieldValue firstNameFieldValue,
+    FieldValue lastNameFieldValue,
+  });
+
+  /// Writes to the document using the transaction API.
+  ///
+  /// If the document does not exist yet, it will be created. If you pass
+  /// [SetOptions], the provided data can be merged into the existing document.
+  ///
+  /// Any [FieldValue]s provided will replace the corresponding fields in the
+  /// [model] during serialization.
+  void transactionSet(
+    Transaction transaction,
+    Person model, {
+    SetOptions? options,
+    FieldValue firstNameFieldValue,
+    FieldValue lastNameFieldValue,
+  });
+
+  /// Writes to the document using the batch API.
+  ///
+  /// If the document does not exist yet, it will be created. If you pass
+  /// [SetOptions], the provided data can be merged into the existing document.
+  ///
+  /// Any [FieldValue]s provided will replace the corresponding fields in the
+  /// [model] during serialization.
+  void batchSet(
+    WriteBatch batch,
+    Person model, {
+    SetOptions? options,
+    FieldValue firstNameFieldValue,
+    FieldValue lastNameFieldValue,
+  });
+
+  /// Updates data on the document. Data will be merged with any existing
+  /// document data.
+  ///
+  /// If no document exists yet, the update will fail.
+  Future<void> update({
+    String firstName,
+    FieldValue firstNameFieldValue,
+    String lastName,
+    FieldValue lastNameFieldValue,
+  });
+
+  /// Updates fields in the current document using the transaction API.
+  ///
+  /// The update will fail if applied to a document that does not exist.
+  void transactionUpdate(
+    Transaction transaction, {
+    String firstName,
+    FieldValue firstNameFieldValue,
+    String lastName,
+    FieldValue lastNameFieldValue,
+  });
+
+  /// Updates fields in the current document using the batch API.
+  ///
+  /// The update will fail if applied to a document that does not exist.
+  void batchUpdate(
+    WriteBatch batch, {
+    String firstName,
+    FieldValue firstNameFieldValue,
+    String lastName,
+    FieldValue lastNameFieldValue,
+  });
+}
+
+class _$PersonDocumentReference
+    extends FirestoreDocumentReference<Person, PersonDocumentSnapshot>
+    implements PersonDocumentReference {
+  _$PersonDocumentReference(this.reference);
+
+  @override
+  final DocumentReference<Person> reference;
+
+  /// A reference to the [PersonCollectionReference] containing this document.
+  PersonCollectionReference get parent {
+    return _$PersonCollectionReference(reference.firestore);
+  }
+
+  @override
+  Stream<PersonDocumentSnapshot> snapshots() {
+    return reference.snapshots().map(PersonDocumentSnapshot._);
+  }
+
+  @override
+  Future<PersonDocumentSnapshot> get([GetOptions? options]) {
+    return reference.get(options).then(PersonDocumentSnapshot._);
+  }
+
+  @override
+  Future<PersonDocumentSnapshot> transactionGet(Transaction transaction) {
+    return transaction.get(reference).then(PersonDocumentSnapshot._);
+  }
+
+  Future<void> set(
+    Person model, {
+    SetOptions? options,
+    FieldValue? firstNameFieldValue,
+    FieldValue? lastNameFieldValue,
+  }) async {
+    final json = {
+      ...model.toJson(),
+      if (firstNameFieldValue != null) 'firstName': firstNameFieldValue,
+
+      if (lastNameFieldValue != null) 'LAST_NAME': lastNameFieldValue,
+    };
+
+    final castedReference = reference.withConverter<Map<String, dynamic>>(
+      fromFirestore: (snapshot, options) => throw UnimplementedError(),
+      toFirestore: (value, options) => value,
+    );
+    return castedReference.set(json, options);
+  }
+
+  void transactionSet(
+    Transaction transaction,
+    Person model, {
+    SetOptions? options,
+    FieldValue? firstNameFieldValue,
+    FieldValue? lastNameFieldValue,
+  }) {
+    final json = {
+      ...model.toJson(),
+      if (firstNameFieldValue != null) 'firstName': firstNameFieldValue,
+
+      if (lastNameFieldValue != null) 'LAST_NAME': lastNameFieldValue,
+    };
+
+    transaction.set(reference, json, options);
+  }
+
+  void batchSet(
+    WriteBatch batch,
+    Person model, {
+    SetOptions? options,
+    FieldValue? firstNameFieldValue,
+    FieldValue? lastNameFieldValue,
+  }) {
+    final json = {
+      ...model.toJson(),
+      if (firstNameFieldValue != null) 'firstName': firstNameFieldValue,
+
+      if (lastNameFieldValue != null) 'LAST_NAME': lastNameFieldValue,
+    };
+
+    batch.set(reference, json, options);
+  }
+
+  Future<void> update({
+    Object? firstName = _sentinel,
+    FieldValue? firstNameFieldValue,
+    Object? lastName = _sentinel,
+    FieldValue? lastNameFieldValue,
+  }) async {
+    assert(
+      firstName == _sentinel || firstNameFieldValue == null,
+      "Cannot specify both firstName and firstNameFieldValue",
+    );
+    assert(
+      lastName == _sentinel || lastNameFieldValue == null,
+      "Cannot specify both lastName and lastNameFieldValue",
+    );
+    final json = {
+      if (firstName != _sentinel)
+        'firstName': ((Object? x) => x)(firstName as String),
+
+      if (firstNameFieldValue != null) 'firstName': firstNameFieldValue,
+
+      if (lastName != _sentinel)
+        'LAST_NAME': ((Object? x) => x)(lastName as String),
+
+      if (lastNameFieldValue != null) 'LAST_NAME': lastNameFieldValue,
+    };
+
+    return reference.update(json);
+  }
+
+  void transactionUpdate(
+    Transaction transaction, {
+    Object? firstName = _sentinel,
+    FieldValue? firstNameFieldValue,
+    Object? lastName = _sentinel,
+    FieldValue? lastNameFieldValue,
+  }) {
+    assert(
+      firstName == _sentinel || firstNameFieldValue == null,
+      "Cannot specify both firstName and firstNameFieldValue",
+    );
+    assert(
+      lastName == _sentinel || lastNameFieldValue == null,
+      "Cannot specify both lastName and lastNameFieldValue",
+    );
+    final json = {
+      if (firstName != _sentinel)
+        'firstName': ((Object? x) => x)(firstName as String),
+
+      if (firstNameFieldValue != null) 'firstName': firstNameFieldValue,
+
+      if (lastName != _sentinel)
+        'LAST_NAME': ((Object? x) => x)(lastName as String),
+
+      if (lastNameFieldValue != null) 'LAST_NAME': lastNameFieldValue,
+    };
+
+    transaction.update(reference, json);
+  }
+
+  void batchUpdate(
+    WriteBatch batch, {
+    Object? firstName = _sentinel,
+    FieldValue? firstNameFieldValue,
+    Object? lastName = _sentinel,
+    FieldValue? lastNameFieldValue,
+  }) {
+    assert(
+      firstName == _sentinel || firstNameFieldValue == null,
+      "Cannot specify both firstName and firstNameFieldValue",
+    );
+    assert(
+      lastName == _sentinel || lastNameFieldValue == null,
+      "Cannot specify both lastName and lastNameFieldValue",
+    );
+    final json = {
+      if (firstName != _sentinel)
+        'firstName': ((Object? x) => x)(firstName as String),
+
+      if (firstNameFieldValue != null) 'firstName': firstNameFieldValue,
+
+      if (lastName != _sentinel)
+        'LAST_NAME': ((Object? x) => x)(lastName as String),
+
+      if (lastNameFieldValue != null) 'LAST_NAME': lastNameFieldValue,
+    };
+
+    batch.update(reference, json);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is PersonDocumentReference &&
+        other.runtimeType == runtimeType &&
+        other.parent == parent &&
+        other.id == id;
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, parent, id);
+}
+
+abstract class PersonQuery
+    implements QueryReference<Person, PersonQuerySnapshot> {
+  @override
+  PersonQuery limit(int limit);
+
+  @override
+  PersonQuery limitToLast(int limit);
+
+  /// Perform a where query based on a [FieldPath].
+  ///
+  /// This method is considered unsafe as it does check that the field path
+  /// maps to a valid property or that parameters such as [isEqualTo] receive
+  /// a value of the correct type.
+  ///
+  /// If possible, instead use the more explicit variant of where queries:
+  ///
+  /// **AVOID**:
+  /// ```dart
+  /// collection.whereFieldPath(FieldPath.fromString('title'), isEqualTo: 'title');
+  /// ```
+  ///
+  /// **PREFER**:
+  /// ```dart
+  /// collection.whereTitle(isEqualTo: 'title');
+  /// ```
+  PersonQuery whereFieldPath(
+    Object fieldPath, {
+    Object? isEqualTo,
+    Object? isNotEqualTo,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    Object? arrayContains,
+    List<Object?>? arrayContainsAny,
+    List<Object?>? whereIn,
+    List<Object?>? whereNotIn,
+    bool? isNull,
+  });
+
+  PersonQuery whereDocumentId({
+    String? isEqualTo,
+    String? isNotEqualTo,
+    String? isLessThan,
+    String? isLessThanOrEqualTo,
+    String? isGreaterThan,
+    String? isGreaterThanOrEqualTo,
+    List<String>? whereIn,
+    List<String>? whereNotIn,
+    bool? isNull,
+  });
+
+  PersonQuery whereFirstName({
+    String? isEqualTo,
+    String? isNotEqualTo,
+    String? isLessThan,
+    String? isLessThanOrEqualTo,
+    String? isGreaterThan,
+    String? isGreaterThanOrEqualTo,
+    List<String>? whereIn,
+    List<String>? whereNotIn,
+    bool? isNull,
+  });
+
+  PersonQuery whereLastName({
+    String? isEqualTo,
+    String? isNotEqualTo,
+    String? isLessThan,
+    String? isLessThanOrEqualTo,
+    String? isGreaterThan,
+    String? isGreaterThanOrEqualTo,
+    List<String>? whereIn,
+    List<String>? whereNotIn,
+    bool? isNull,
+  });
+
+  /// Perform an order query based on a [FieldPath].
+  ///
+  /// This method is considered unsafe as it does check that the field path
+  /// maps to a valid property or that parameters such as [isEqualTo] receive
+  /// a value of the correct type.
+  ///
+  /// If possible, instead use the more explicit variant of order queries:
+  ///
+  /// **AVOID**:
+  /// ```dart
+  /// collection.orderByFieldPath(
+  ///   FieldPath.fromString('title'),
+  ///   startAt: 'title',
+  /// );
+  /// ```
+  ///
+  /// **PREFER**:
+  /// ```dart
+  /// collection.orderByTitle(startAt: 'title');
+  /// ```
+  PersonQuery orderByFieldPath(
+    Object fieldPath, {
+    bool descending = false,
+    Object startAt,
+    Object startAfter,
+    Object endAt,
+    Object endBefore,
+    PersonDocumentSnapshot? startAtDocument,
+    PersonDocumentSnapshot? endAtDocument,
+    PersonDocumentSnapshot? endBeforeDocument,
+    PersonDocumentSnapshot? startAfterDocument,
+  });
+
+  PersonQuery orderByDocumentId({
+    bool descending = false,
+    String startAt,
+    String startAfter,
+    String endAt,
+    String endBefore,
+    PersonDocumentSnapshot? startAtDocument,
+    PersonDocumentSnapshot? endAtDocument,
+    PersonDocumentSnapshot? endBeforeDocument,
+    PersonDocumentSnapshot? startAfterDocument,
+  });
+
+  PersonQuery orderByFirstName({
+    bool descending = false,
+    String startAt,
+    String startAfter,
+    String endAt,
+    String endBefore,
+    PersonDocumentSnapshot? startAtDocument,
+    PersonDocumentSnapshot? endAtDocument,
+    PersonDocumentSnapshot? endBeforeDocument,
+    PersonDocumentSnapshot? startAfterDocument,
+  });
+
+  PersonQuery orderByLastName({
+    bool descending = false,
+    String startAt,
+    String startAfter,
+    String endAt,
+    String endBefore,
+    PersonDocumentSnapshot? startAtDocument,
+    PersonDocumentSnapshot? endAtDocument,
+    PersonDocumentSnapshot? endBeforeDocument,
+    PersonDocumentSnapshot? startAfterDocument,
+  });
+}
+
+class _$PersonQuery extends QueryReference<Person, PersonQuerySnapshot>
+    implements PersonQuery {
+  _$PersonQuery(
+    this._collection, {
+    required Query<Person> $referenceWithoutCursor,
+    $QueryCursor $queryCursor = const $QueryCursor(),
+  }) : super(
+         $referenceWithoutCursor: $referenceWithoutCursor,
+         $queryCursor: $queryCursor,
+       );
+
+  final CollectionReference<Object?> _collection;
+
+  @override
+  Stream<PersonQuerySnapshot> snapshots([SnapshotOptions? options]) {
+    return reference.snapshots().map(PersonQuerySnapshot._fromQuerySnapshot);
+  }
+
+  @override
+  Future<PersonQuerySnapshot> get([GetOptions? options]) {
+    return reference.get(options).then(PersonQuerySnapshot._fromQuerySnapshot);
+  }
+
+  @override
+  PersonQuery limit(int limit) {
+    return _$PersonQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.limit(limit),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  PersonQuery limitToLast(int limit) {
+    return _$PersonQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.limitToLast(limit),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  PersonQuery whereFieldPath(
+    Object fieldPath, {
+    Object? isEqualTo = _sentinel,
+    Object? isNotEqualTo = _sentinel,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    Object? arrayContains,
+    List<Object?>? arrayContainsAny,
+    List<Object?>? whereIn,
+    List<Object?>? whereNotIn,
+    bool? isNull,
+  }) {
+    return _$PersonQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        fieldPath,
+        isEqualTo: isEqualTo != _sentinel ? isEqualTo : null,
+        isNotEqualTo: isNotEqualTo != _sentinel ? isNotEqualTo : null,
+        isLessThan: isLessThan,
+        isLessThanOrEqualTo: isLessThanOrEqualTo,
+        isGreaterThan: isGreaterThan,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
+        arrayContains: arrayContains,
+        arrayContainsAny: arrayContainsAny,
+        whereIn: whereIn,
+        whereNotIn: whereNotIn,
+        isNull:
+            isNull ??
+            (isEqualTo == null ? false : null) ??
+            (isNotEqualTo == null ? true : null),
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  PersonQuery whereDocumentId({
+    Object? isEqualTo = _sentinel,
+    Object? isNotEqualTo = _sentinel,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    List<String>? whereIn,
+    List<String>? whereNotIn,
+    bool? isNull,
+  }) {
+    return _$PersonQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        FieldPath.documentId,
+        isEqualTo: isEqualTo != _sentinel ? isEqualTo : null,
+        isNotEqualTo: isNotEqualTo != _sentinel ? isNotEqualTo : null,
+        isLessThan: isLessThan,
+        isLessThanOrEqualTo: isLessThanOrEqualTo,
+        isGreaterThan: isGreaterThan,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
+        whereIn: whereIn,
+        whereNotIn: whereNotIn,
+        isNull:
+            isNull ??
+            (isEqualTo == null ? false : null) ??
+            (isNotEqualTo == null ? true : null),
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  PersonQuery whereFirstName({
+    Object? isEqualTo = _sentinel,
+    Object? isNotEqualTo = _sentinel,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    List<String>? whereIn,
+    List<String>? whereNotIn,
+    bool? isNull,
+  }) {
+    return _$PersonQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        'firstName',
+        isEqualTo: isEqualTo != _sentinel
+            ? ((Object? x) => x)(isEqualTo as String)
+            : null,
+        isNotEqualTo: isNotEqualTo != _sentinel
+            ? ((Object? x) => x)(isNotEqualTo as String)
+            : null,
+        isLessThan: isLessThan != null
+            ? ((Object? x) => x)(isLessThan as String)
+            : null,
+        isLessThanOrEqualTo: isLessThanOrEqualTo != null
+            ? ((Object? x) => x)(isLessThanOrEqualTo as String)
+            : null,
+        isGreaterThan: isGreaterThan != null
+            ? ((Object? x) => x)(isGreaterThan as String)
+            : null,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo != null
+            ? ((Object? x) => x)(isGreaterThanOrEqualTo as String)
+            : null,
+        whereIn: whereIn?.map((e) => ((Object? x) => x)(e)),
+        whereNotIn: whereNotIn?.map((e) => ((Object? x) => x)(e)),
+        isNull:
+            isNull ??
+            (isEqualTo == null ? false : null) ??
+            (isNotEqualTo == null ? true : null),
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  PersonQuery whereLastName({
+    Object? isEqualTo = _sentinel,
+    Object? isNotEqualTo = _sentinel,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    List<String>? whereIn,
+    List<String>? whereNotIn,
+    bool? isNull,
+  }) {
+    return _$PersonQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        'LAST_NAME',
+        isEqualTo: isEqualTo != _sentinel
+            ? ((Object? x) => x)(isEqualTo as String)
+            : null,
+        isNotEqualTo: isNotEqualTo != _sentinel
+            ? ((Object? x) => x)(isNotEqualTo as String)
+            : null,
+        isLessThan: isLessThan != null
+            ? ((Object? x) => x)(isLessThan as String)
+            : null,
+        isLessThanOrEqualTo: isLessThanOrEqualTo != null
+            ? ((Object? x) => x)(isLessThanOrEqualTo as String)
+            : null,
+        isGreaterThan: isGreaterThan != null
+            ? ((Object? x) => x)(isGreaterThan as String)
+            : null,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo != null
+            ? ((Object? x) => x)(isGreaterThanOrEqualTo as String)
+            : null,
+        whereIn: whereIn?.map((e) => ((Object? x) => x)(e)),
+        whereNotIn: whereNotIn?.map((e) => ((Object? x) => x)(e)),
+        isNull:
+            isNull ??
+            (isEqualTo == null ? false : null) ??
+            (isNotEqualTo == null ? true : null),
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  PersonQuery orderByFieldPath(
+    Object fieldPath, {
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    PersonDocumentSnapshot? startAtDocument,
+    PersonDocumentSnapshot? endAtDocument,
+    PersonDocumentSnapshot? endBeforeDocument,
+    PersonDocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+      fieldPath,
+      descending: descending,
+    );
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$PersonQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  @override
+  PersonQuery orderByDocumentId({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    PersonDocumentSnapshot? startAtDocument,
+    PersonDocumentSnapshot? endAtDocument,
+    PersonDocumentSnapshot? endBeforeDocument,
+    PersonDocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+      FieldPath.documentId,
+      descending: descending,
+    );
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$PersonQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  @override
+  PersonQuery orderByFirstName({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    PersonDocumentSnapshot? startAtDocument,
+    PersonDocumentSnapshot? endAtDocument,
+    PersonDocumentSnapshot? endBeforeDocument,
+    PersonDocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+      'firstName',
+      descending: descending,
+    );
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$PersonQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  @override
+  PersonQuery orderByLastName({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    PersonDocumentSnapshot? startAtDocument,
+    PersonDocumentSnapshot? endAtDocument,
+    PersonDocumentSnapshot? endBeforeDocument,
+    PersonDocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+      'LAST_NAME',
+      descending: descending,
+    );
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$PersonQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is _$PersonQuery &&
+        other.runtimeType == runtimeType &&
+        other.reference == reference;
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, reference);
+}
+
+class PersonDocumentSnapshot extends FirestoreDocumentSnapshot<Person> {
+  PersonDocumentSnapshot._(this.snapshot) : data = snapshot.data();
+
+  @override
+  final DocumentSnapshot<Person> snapshot;
+
+  @override
+  PersonDocumentReference get reference {
+    return PersonDocumentReference(snapshot.reference);
+  }
+
+  @override
+  final Person? data;
+}
+
+class PersonQuerySnapshot
+    extends FirestoreQuerySnapshot<Person, PersonQueryDocumentSnapshot> {
+  PersonQuerySnapshot._(this.snapshot, this.docs, this.docChanges);
+
+  factory PersonQuerySnapshot._fromQuerySnapshot(
+    QuerySnapshot<Person> snapshot,
+  ) {
+    final docs = snapshot.docs.map(PersonQueryDocumentSnapshot._).toList();
+
+    final docChanges = snapshot.docChanges.map((change) {
+      return _decodeDocumentChange(change, PersonDocumentSnapshot._);
+    }).toList();
+
+    return PersonQuerySnapshot._(snapshot, docs, docChanges);
+  }
+
+  static FirestoreDocumentChange<PersonDocumentSnapshot>
+  _decodeDocumentChange<T>(
+    DocumentChange<T> docChange,
+    PersonDocumentSnapshot Function(DocumentSnapshot<T> doc) decodeDoc,
+  ) {
+    return FirestoreDocumentChange<PersonDocumentSnapshot>(
+      type: docChange.type,
+      oldIndex: docChange.oldIndex,
+      newIndex: docChange.newIndex,
+      doc: decodeDoc(docChange.doc),
+    );
+  }
+
+  final QuerySnapshot<Person> snapshot;
+
+  @override
+  final List<PersonQueryDocumentSnapshot> docs;
+
+  @override
+  final List<FirestoreDocumentChange<PersonDocumentSnapshot>> docChanges;
+}
+
+class PersonQueryDocumentSnapshot extends FirestoreQueryDocumentSnapshot<Person>
+    implements PersonDocumentSnapshot {
+  PersonQueryDocumentSnapshot._(this.snapshot) : data = snapshot.data();
+
+  @override
+  final QueryDocumentSnapshot<Person> snapshot;
+
+  @override
+  final Person data;
+
+  @override
+  PersonDocumentReference get reference {
+    return PersonDocumentReference(snapshot.reference);
+  }
+}
+
+/// A collection reference object can be used for adding documents,
+/// getting document references, and querying for documents
+/// (using the methods inherited from Query).
 abstract class EmptyModelCollectionReference
     implements
         EmptyModelQuery,

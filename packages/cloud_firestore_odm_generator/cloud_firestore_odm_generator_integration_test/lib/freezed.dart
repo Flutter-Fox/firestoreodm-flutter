@@ -8,9 +8,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_firestore_odm/cloud_firestore_odm.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'simple.dart';
+
 part 'freezed.freezed.dart';
 part 'freezed.g.dart';
 
+@Collection<Nested>('people/**/nested')
 @Collection<Person>('freezed-test')
 @freezed
 sealed class Person with _$Person {

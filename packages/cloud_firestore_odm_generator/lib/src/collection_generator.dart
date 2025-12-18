@@ -148,6 +148,24 @@ const _sentinel = _Sentinel();
 
   @override
   Iterable<Object> generateForData(GlobalData globalData, CollectionGraph data) sync* {
+    // Collect all unique enum types across all cross-library collections
+    final allEnumTypes = <EnumElement>{};
+    for (final collection in data.allCollections) {
+      if (collection.isCrossLibrary) {
+        allEnumTypes.addAll(collection.usedEnumTypes);
+      }
+    }
+
+    // Generate enum maps for cross-library collections (before any templates)
+    if (allEnumTypes.isNotEmpty) {
+      yield '// Enum maps for cross-library collection support\n';
+      for (final enumElement in allEnumTypes) {
+        yield generateEnumMapCode(enumElement);
+        yield '\n\n';
+      }
+    }
+
+    // Generate collection templates
     for (final collection in data.allCollections) {
       yield CollectionReferenceTemplate(collection);
       yield DocumentReferenceTemplate(collection);
