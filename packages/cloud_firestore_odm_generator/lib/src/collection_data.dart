@@ -189,25 +189,31 @@ class CollectionData with Names {
         );
 
         throw InvalidGenerationSourceError('''
-Cross-library collections are only supported for models with primitive fields.
+Cross-library collection detected with unsupported field types.
 
-The model `${collectionTargetElement.name3}` contains fields that require access to
-private json_serializable helpers: ${unsafeFields.join(', ')}
+The model `${collectionTargetElement.name3}` contains fields that cannot be safely serialized
+across library boundaries: ${unsafeFields.join(', ')}
 
-Unsupported types for cross-library collections:
-  • Enums (require private enum maps like _\$${collectionTargetElement.name3}EnumMap)
-  • Sets (require conversion to List via _\$PerFieldToJson)
-  • Nested objects (require recursive serialization)
-  • Custom JsonConverter types
+Supported types for cross-library collections:
+  ✓ Primitives: String, int, double, bool, num (and nullable variants)
+  ✓ DateTime (and nullable DateTime?)
+  ✓ Enums with or without @JsonValue
+  ✓ Sets: Set<T> where T is a supported type
+  ✓ Lists: List<T> where T is a supported type (no nested arrays)
+  ✓ Maps: Map<String, T> where T is a supported type
+  ✓ Nested objects with public toJson() and fromJson() methods
 
-Supported types:
-  ✓ String, int, double, bool, num (and nullable variants)
-  ✓ List<primitive> (e.g., List<String>, List<int>)
+Unsupported types:
+  ✗ Custom JsonConverter types (except DateTime)
+  ✗ Private or non-standard serialization
+  ✗ Nested arrays (List<List<T>>, List<Set<T>>)
+  ✗ Maps with non-String keys
 
 Solutions:
   1. Move the @Collection annotation to ${collectionTargetElement.library2}
-  2. Change field types to primitives only
-  3. Use @JsonKey(includeFromJson: false, includeToJson: false) to ignore complex fields
+  2. Ensure nested objects have public toJson() and fromJson() methods
+  3. Use @JsonKey(includeFromJson: false, includeToJson: false) to ignore unsupported fields
+  4. For custom types, ensure they match the supported types listed above
 
 Current locations:
   - @Collection is from $annotatedElementSource
@@ -691,6 +697,7 @@ extension on String {
 
 const _coreListChecker = TypeChecker.fromUrl('dart:core#List');
 const _coreSetChecker = TypeChecker.fromUrl('dart:core#Set');
+const _coreDateTimeChecker = TypeChecker.fromUrl('dart:core#DateTime');
 
 extension DartTypeExtension on DartType {
   bool get isJsonDocumentReference {
@@ -702,6 +709,7 @@ extension DartTypeExtension on DartType {
 
   bool get isList => _coreListChecker.isExactlyType(this);
   bool get isSet => _coreSetChecker.isExactlyType(this);
+  bool get isDateTime => _coreDateTimeChecker.isExactlyType(this);
   bool get isSupportedIterable => isList || isSet;
 
   bool get isSupportedPrimitiveIterable {
@@ -722,12 +730,17 @@ extension DartTypeExtension on DartType {
   /// Safe types are those that can be serialized without accessing private
   /// json_serializable helpers. We generate inline code for these types.
   ///
-  /// Supported: primitives, enums, Sets, Lists, Maps, nested objects with public toJson/fromJson
-  /// Not supported: custom converters, generic types, circular dependencies
+  /// Supported: primitives, DateTime, enums, Sets, Lists, Maps, nested objects with public toJson/fromJson
+  /// Not supported: custom converters (that aren't DateTime), generic types, circular dependencies
   bool get isSafeForCrossLibrary {
     // Primitive types are safe (including nullable variants)
     if (isDartCoreString || isDartCoreInt || isDartCoreDouble ||
         isDartCoreBool || isDartCoreNum) {
+      return true;
+    }
+
+    // DateTime is safe (json_serializable handles it natively)
+    if (isDateTime) {
       return true;
     }
 
@@ -1061,10 +1074,11 @@ String generatePerFieldToJsonCode(DartType fieldType, String fieldVar) {
 }
 
 /// Helper extension for primitive type checking
+/// Includes DateTime since it's natively serialized by json_serializable
 extension on DartType {
   bool get isPrimitive =>
       isDartCoreString || isDartCoreInt || isDartCoreDouble ||
-      isDartCoreBool || isDartCoreNum;
+      isDartCoreBool || isDartCoreNum || isDateTime;
 }
 
 /// Collects all unique enum types used in a model class.
