@@ -32,9 +32,6 @@ dev_dependencies:
 dependency_overrides:
   cloud_firestore_odm:
     path: ../
-  analyzer: "7.7.1"
-  dart_style: "3.1.1"
-  source_gen: "3.1.0"
 
 flutter:
   uses-material-design: true
