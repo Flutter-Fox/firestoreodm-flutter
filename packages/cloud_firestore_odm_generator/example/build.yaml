@@ -7,3 +7,7 @@ targets:
         options:
           create_field_map: true
           create_per_field_to_json: true
+          # Nested models must serialize to Maps. Without this json_serializable
+          # emits the object itself and leans on jsonEncode calling toJson,
+          # which Firestore never does.
+          explicit_to_json: true

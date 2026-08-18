@@ -1,0 +1,3 @@
+# Every test here compiles a source file through expect_error, which runs a
+# full analysis pass and takes well over the 30s default on a cold cache.
+timeout: 480s

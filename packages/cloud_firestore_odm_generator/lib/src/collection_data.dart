@@ -698,6 +698,7 @@ extension on String {
 const _coreListChecker = TypeChecker.fromUrl('dart:core#List');
 const _coreSetChecker = TypeChecker.fromUrl('dart:core#Set');
 const _coreDateTimeChecker = TypeChecker.fromUrl('dart:core#DateTime');
+const _coreDurationChecker = TypeChecker.fromUrl('dart:core#Duration');
 
 extension DartTypeExtension on DartType {
   bool get isJsonDocumentReference {
@@ -710,6 +711,7 @@ extension DartTypeExtension on DartType {
   bool get isList => _coreListChecker.isExactlyType(this);
   bool get isSet => _coreSetChecker.isExactlyType(this);
   bool get isDateTime => _coreDateTimeChecker.isExactlyType(this);
+  bool get isDuration => _coreDurationChecker.isExactlyType(this);
   bool get isSupportedIterable => isList || isSet;
 
   bool get isSupportedPrimitiveIterable {
@@ -730,8 +732,8 @@ extension DartTypeExtension on DartType {
   /// Safe types are those that can be serialized without accessing private
   /// json_serializable helpers. We generate inline code for these types.
   ///
-  /// Supported: primitives, DateTime, enums, Sets, Lists, Maps, nested objects with public toJson/fromJson
-  /// Not supported: custom converters (that aren't DateTime), generic types, circular dependencies
+  /// Supported: primitives, DateTime, Duration, enums, Sets, Lists, Maps, nested objects with public toJson/fromJson
+  /// Not supported: custom converters (that aren't DateTime or Duration), generic types, circular dependencies
   bool get isSafeForCrossLibrary {
     // Primitive types are safe (including nullable variants)
     if (isDartCoreString || isDartCoreInt || isDartCoreDouble ||
@@ -739,8 +741,9 @@ extension DartTypeExtension on DartType {
       return true;
     }
 
-    // DateTime is safe (json_serializable handles it natively)
-    if (isDateTime) {
+    // DateTime and Duration are safe: json_serializable encodes them natively,
+    // as an ISO-8601 String and an int of microseconds respectively
+    if (isDateTime || isDuration) {
       return true;
     }
 
@@ -954,6 +957,23 @@ String generateEnumMapCode(EnumElement enumElement) {
   return "const _firestoreEnumMap_$enumName = {\n${entries.join(',\n')},\n};";
 }
 
+/// Returns how json_serializable natively encodes [type], or null when [type]
+/// needs no rewriting.
+///
+/// These types carry no public `toJson`, so a cross-library collection has to
+/// inline the same conversion json_serializable would emit privately. Passing
+/// them through untouched writes a value that `toJson` never produces, so
+/// writes and queries disagree on the stored type.
+String? _nativeScalarConversion(DartType type) {
+  if (type.isDateTime) return 'toIso8601String()';
+  if (type.isDuration) return 'inMicroseconds';
+  return null;
+}
+
+/// Null-aware access for [type], so a non-nullable field does not generate a
+/// redundant `?.`.
+String _accessFor(DartType type) => type.getDisplayString().endsWith('?') ? '?.' : '.';
+
 /// Generates inline transformation code for cross-library field serialization.
 ///
 /// This creates type-specific serialization code that doesn't rely on private
@@ -965,12 +985,23 @@ String generateEnumMapCode(EnumElement enumElement) {
 /// - List<Enum>: `(field as List?)?.map((e) => _firestoreEnumMap_Status[e]!).toList()`
 /// - Nested object: `(field) => field?.toJson()`
 /// - Primitive: `((Object? x) => x)` (identity)
+/// - DateTime: `((DateTime? x) => x?.toIso8601String())`
+/// - Duration: `((Duration? x) => x?.inMicroseconds)`
 String generatePerFieldToJsonCode(DartType fieldType, String fieldVar) {
   // Primitive types - pass through with identity
   if (fieldType.isDartCoreString || fieldType.isDartCoreInt ||
       fieldType.isDartCoreDouble || fieldType.isDartCoreBool ||
       fieldType.isDartCoreNum) {
     return '((Object? x) => x)';
+  }
+
+  // DateTime and Duration - inline json_serializable's own conversion.
+  // Must precede every isPrimitive check below: those pass the value through
+  // unchanged, which would store a raw DateTime/Duration instead.
+  final nativeConversion = _nativeScalarConversion(fieldType);
+  if (nativeConversion != null) {
+    final typeName = fieldType.getDisplayString();
+    return '(($typeName x) => x${_accessFor(fieldType)}$nativeConversion)';
   }
 
   // Enums - use generated enum map (wrapped in lambda with type annotation)
@@ -984,6 +1015,11 @@ String generatePerFieldToJsonCode(DartType fieldType, String fieldVar) {
   if (fieldType.isSet) {
     final elementType = (fieldType as InterfaceType).typeArguments.single;
     final typeName = fieldType.getDisplayString();
+
+    final elementConversion = _nativeScalarConversion(elementType);
+    if (elementConversion != null) {
+      return '(($typeName x) => (x as Set?)?.map((e) => e${_accessFor(elementType)}$elementConversion).toList())';
+    }
 
     if (elementType.isPrimitive) {
       return '(($typeName x) => (x as Set?)?.toList())';
@@ -1002,6 +1038,13 @@ String generatePerFieldToJsonCode(DartType fieldType, String fieldVar) {
   // Lists - handle based on element type
   if (fieldType.isList) {
     final elementType = (fieldType as InterfaceType).typeArguments.single;
+
+    // List<DateTime> / List<Duration> - convert each element
+    final elementConversion = _nativeScalarConversion(elementType);
+    if (elementConversion != null) {
+      final typeName = fieldType.getDisplayString();
+      return '(($typeName x) => (x as List?)?.map((e) => e${_accessFor(elementType)}$elementConversion).toList())';
+    }
 
     // List of primitives - pass through
     if (elementType.isPrimitive) {
@@ -1036,6 +1079,13 @@ String generatePerFieldToJsonCode(DartType fieldType, String fieldVar) {
       // Map<String, dynamic> or Map<String, Object?> - pass through
       if (valueType.isDartCoreObject || valueType is DynamicType) {
         return '((Object? x) => x)';
+      }
+
+      // Map<String, DateTime> / Map<String, Duration> - convert each value
+      final valueConversion = _nativeScalarConversion(valueType);
+      if (valueConversion != null) {
+        final typeName = fieldType.getDisplayString();
+        return '(($typeName x) => (x as Map<String, dynamic>?)?.map((k, v) => MapEntry(k, v${_accessFor(valueType)}$valueConversion)))';
       }
 
       // Map<String, primitive> - pass through
@@ -1074,11 +1124,15 @@ String generatePerFieldToJsonCode(DartType fieldType, String fieldVar) {
 }
 
 /// Helper extension for primitive type checking
-/// Includes DateTime since it's natively serialized by json_serializable
+///
+/// Only types Firestore stores as-is belong here, because every caller uses
+/// this to skip conversion. DateTime and Duration are excluded on purpose:
+/// json_serializable rewrites both, so they go through
+/// [_nativeScalarConversion] instead.
 extension on DartType {
   bool get isPrimitive =>
       isDartCoreString || isDartCoreInt || isDartCoreDouble ||
-      isDartCoreBool || isDartCoreNum || isDateTime;
+      isDartCoreBool || isDartCoreNum;
 }
 
 /// Collects all unique enum types used in a model class.
