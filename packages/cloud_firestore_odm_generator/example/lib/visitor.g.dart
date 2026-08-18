@@ -8,18 +8,18 @@ part of 'visitor.dart';
 
 Visitor _$VisitorFromJson(Map<String, dynamic> json) => Visitor(
   id: json['id'] as String?,
-  homeAddress: json['homeAddress'] == null
+  homeAddress: json['home_address'] == null
       ? null
-      : Address.fromJson(json['homeAddress'] as Map<String, dynamic>),
-  previousAddresses: (json['previousAddresses'] as List<dynamic>?)
+      : Address.fromJson(json['home_address'] as Map<String, dynamic>),
+  previousAddresses: (json['previous_addresses'] as List<dynamic>?)
       ?.map((e) => Address.fromJson(e as Map<String, dynamic>))
       .toList(),
 );
 
 const _$VisitorFieldMap = <String, String>{
   'id': 'id',
-  'homeAddress': 'homeAddress',
-  'previousAddresses': 'previousAddresses',
+  'homeAddress': 'home_address',
+  'previousAddresses': 'previous_addresses',
 };
 
 // ignore: unused_element
@@ -34,6 +34,6 @@ abstract class _$VisitorPerFieldToJson {
 
 Map<String, dynamic> _$VisitorToJson(Visitor instance) => <String, dynamic>{
   'id': instance.id,
-  'homeAddress': instance.homeAddress,
-  'previousAddresses': instance.previousAddresses,
+  'home_address': instance.homeAddress,
+  'previous_addresses': instance.previousAddresses,
 };

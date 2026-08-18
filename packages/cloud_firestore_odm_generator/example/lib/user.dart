@@ -2,10 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart' hide Index;
 import 'package:cloud_firestore_odm/cloud_firestore_odm.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-// Address is never named here, but the generated part file types its filters
-// with it. A part file cannot carry its own imports, so every nested type
+// Address and UpperCaseSerializer are never named here, but the generated part
+// file types its filters with the one and rebuilds the other. A part file
+// cannot carry its own imports, so every nested type and every JsonConverter
 // reachable from a collection's model has to be imported at the @Collection.
 import 'address.dart';
+import 'converters.dart';
 import 'resident.dart';
 import 'visitor.dart';
 

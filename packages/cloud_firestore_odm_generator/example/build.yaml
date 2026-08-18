@@ -3,10 +3,17 @@ targets:
     builders:
       cloud_firestore_odm_generator:
         enabled: true
+        options:
+          # Must mirror json_serializable's field_rename below. build_runner
+          # gives each builder only its own options, so this cannot be inferred.
+          field_rename: snake
       json_serializable:
         options:
           create_field_map: true
           create_per_field_to_json: true
+          # Set at the builder, not on any annotation, which is how most
+          # projects configure it.
+          field_rename: snake
           # Nested models must serialize to Maps. Without this json_serializable
           # emits the object itself and leans on jsonEncode calling toJson,
           # which Firestore never does.

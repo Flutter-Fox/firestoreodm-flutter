@@ -22,6 +22,22 @@ import 'templates/query_snapshot.dart';
 
 const namedQueryChecker = TypeChecker.fromUrl('package:cloud_firestore_odm/annotation.dart#NamedQuery');
 
+/// Reads the builder's `field_rename` option, accepting the same spellings as
+/// json_serializable: none, kebab, snake, pascal, screamingSnake.
+FieldRename parseFieldRenameOption(Object? value) {
+  if (value == null) return FieldRename.none;
+
+  final name = value.toString();
+  for (final rename in FieldRename.values) {
+    if (rename.name == name) return rename;
+  }
+
+  throw ArgumentError(
+    'Unknown field_rename "$name" for cloud_firestore_odm_generator. '
+    'Expected one of: ${FieldRename.values.map((e) => e.name).join(', ')}.',
+  );
+}
+
 class QueryingField {
   QueryingField(this.name, this.type, {required this.field, required this.updatable, required this.whereDoc, required this.orderByDoc});
 
@@ -57,6 +73,14 @@ class GlobalData {
 
 @immutable
 class CollectionGenerator extends ParserGenerator<GlobalData, CollectionGraph, Collection<Object?>> {
+  CollectionGenerator({this.fieldRename = FieldRename.none});
+
+  /// Fallback rename for models that do not set `@JsonSerializable(fieldRename:)`.
+  ///
+  /// build_runner hands each builder only its own options, so json_serializable's
+  /// `field_rename` is invisible here and has to be mirrored onto this builder.
+  final FieldRename fieldRename;
+
   @override
   GlobalData parseGlobalData(LibraryElement2 library) {
     final globalData = GlobalData();
@@ -118,6 +142,7 @@ class CollectionGenerator extends ParserGenerator<GlobalData, CollectionGraph, C
         globalData: globalData,
         libraryElement: library,
         annotation: annotation,
+        defaultFieldRename: fieldRename,
       );
     }).toList();
 

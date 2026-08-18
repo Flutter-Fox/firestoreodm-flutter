@@ -15,27 +15,29 @@ Resident _$ResidentFromJson(Map<String, dynamic> json) => Resident(
   city: json['city'] as String?,
   state: json['state'] as String?,
   zip: json['zip'] as String?,
-  admittedAt: json['admittedAt'] == null
+  admittedAt: json['admitted_at'] == null
       ? null
-      : DateTime.parse(json['admittedAt'] as String),
-  stayDuration: json['stayDuration'] == null
+      : DateTime.parse(json['admitted_at'] as String),
+  stayDuration: json['stay_duration'] == null
       ? null
-      : Duration(microseconds: (json['stayDuration'] as num).toInt()),
-  homeAddress: json['homeAddress'] == null
+      : Duration(microseconds: (json['stay_duration'] as num).toInt()),
+  homeAddress: json['home_address'] == null
       ? null
-      : Address.fromJson(json['homeAddress'] as Map<String, dynamic>),
-  previousAddresses: (json['previousAddresses'] as List<dynamic>?)
+      : Address.fromJson(json['home_address'] as Map<String, dynamic>),
+  previousAddresses: (json['previous_addresses'] as List<dynamic>?)
       ?.map((e) => Address.fromJson(e as Map<String, dynamic>))
       .toList(),
-  contactAddresses: (json['contactAddresses'] as Map<String, dynamic>?)?.map(
+  contactAddresses: (json['contact_addresses'] as Map<String, dynamic>?)?.map(
     (k, e) => MapEntry(k, Address.fromJson(e as Map<String, dynamic>)),
   ),
-  visitDurations: (json['visitDurations'] as List<dynamic>?)
+  visitDurations: (json['visit_durations'] as List<dynamic>?)
       ?.map((e) => Duration(microseconds: (e as num).toInt()))
       .toList(),
   milestones: (json['milestones'] as Map<String, dynamic>?)?.map(
     (k, e) => MapEntry(k, DateTime.parse(e as String)),
   ),
+  nickname: const UpperCaseSerializer().fromJson(json['nickname']),
+  alias: upperCaseSerializer.fromJson(json['alias']),
 );
 
 const _$ResidentFieldMap = <String, String>{
@@ -47,13 +49,15 @@ const _$ResidentFieldMap = <String, String>{
   'city': 'city',
   'state': 'state',
   'zip': 'zip',
-  'admittedAt': 'admittedAt',
-  'stayDuration': 'stayDuration',
-  'homeAddress': 'homeAddress',
-  'previousAddresses': 'previousAddresses',
-  'contactAddresses': 'contactAddresses',
-  'visitDurations': 'visitDurations',
+  'admittedAt': 'admitted_at',
+  'stayDuration': 'stay_duration',
+  'homeAddress': 'home_address',
+  'previousAddresses': 'previous_addresses',
+  'contactAddresses': 'contact_addresses',
+  'visitDurations': 'visit_durations',
   'milestones': 'milestones',
+  'nickname': 'nickname',
+  'alias': 'alias',
 };
 
 // ignore: unused_element
@@ -92,6 +96,12 @@ abstract class _$ResidentPerFieldToJson {
   // ignore: unused_element
   static Object? milestones(Map<String, DateTime>? instance) =>
       instance?.map((k, e) => MapEntry(k, e.toIso8601String()));
+  // ignore: unused_element
+  static Object? nickname(String? instance) =>
+      const UpperCaseSerializer().toJson(instance);
+  // ignore: unused_element
+  static Object? alias(String? instance) =>
+      upperCaseSerializer.toJson(instance);
 }
 
 Map<String, dynamic> _$ResidentToJson(Resident instance) => <String, dynamic>{
@@ -103,19 +113,21 @@ Map<String, dynamic> _$ResidentToJson(Resident instance) => <String, dynamic>{
   'city': instance.city,
   'state': instance.state,
   'zip': instance.zip,
-  'admittedAt': instance.admittedAt?.toIso8601String(),
-  'stayDuration': instance.stayDuration?.inMicroseconds,
-  'homeAddress': instance.homeAddress?.toJson(),
-  'previousAddresses': instance.previousAddresses
+  'admitted_at': instance.admittedAt?.toIso8601String(),
+  'stay_duration': instance.stayDuration?.inMicroseconds,
+  'home_address': instance.homeAddress?.toJson(),
+  'previous_addresses': instance.previousAddresses
       ?.map((e) => e.toJson())
       .toList(),
-  'contactAddresses': instance.contactAddresses?.map(
+  'contact_addresses': instance.contactAddresses?.map(
     (k, e) => MapEntry(k, e.toJson()),
   ),
-  'visitDurations': instance.visitDurations
+  'visit_durations': instance.visitDurations
       ?.map((e) => e.inMicroseconds)
       .toList(),
   'milestones': instance.milestones?.map(
     (k, e) => MapEntry(k, e.toIso8601String()),
   ),
+  'nickname': const UpperCaseSerializer().toJson(instance.nickname),
+  'alias': upperCaseSerializer.toJson(instance.alias),
 };

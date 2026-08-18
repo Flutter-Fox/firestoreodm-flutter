@@ -18,6 +18,7 @@ const collectionChecker = TypeChecker.fromUrl('package:cloud_firestore_odm/annot
 const idChecker = TypeChecker.fromUrl('package:cloud_firestore_odm/annotation.dart#Id');
 const jsonSerializableChecker = TypeChecker.typeNamed(JsonSerializable);
 const freezedChecker = TypeChecker.typeNamed(Freezed);
+const jsonConverterChecker = TypeChecker.typeNamed(JsonConverter);
 const jsonKeyChecker = TypeChecker.typeNamed(JsonKey);
 const jsonValueChecker = TypeChecker.fromUrl('package:json_annotation/json_annotation.dart#JsonValue');
 
@@ -99,6 +100,7 @@ class CollectionData with Names {
     required Element2 annotatedElement,
     required DartObject annotation,
     required GlobalData globalData,
+    FieldRename defaultFieldRename = FieldRename.none,
   }) {
     // TODO find a way to test validation
 
@@ -152,6 +154,10 @@ class CollectionData with Names {
         );
 
     final hasJsonSerializable = jsonSerializableChecker.hasAnnotationOf(collectionTargetElement);
+
+    // json_serializable picks a wire name from @JsonKey(name:), else the class's
+    // fieldRename, else the builder's. Mirror that order.
+    final effectiveFieldRename = _classFieldRename(collectionTargetElement) ?? defaultFieldRename;
     // Freezed classes are also JsonSerializable
     if (!hasJsonSerializable && !hasFreezed) {
       throw InvalidGenerationSourceError(
@@ -312,9 +318,22 @@ Current locations:
     // For cross-library collections, we need to generate type-specific transformation code.
     // Collect a mapping of field names to types for use in perFieldToJson.
     final fieldTypeMap = <String, DartType>{};
+    final fieldConverterMap = <String, String>{};
     final usedEnumTypes = <EnumElement>{};
 
     if (isCrossLibrary) {
+      // A converter on the class applies to every field of a matching type, and
+      // working out which those are duplicates json_serializable's type
+      // matching. Refuse instead of silently encoding the wrong thing.
+      if (converterExpressionFor(collectionTargetElement) != null) {
+        throw InvalidGenerationSourceError(
+          'Class-level JsonConverters are not supported on cross-library '
+          'collections. Move the converter onto the individual fields, or move '
+          '`${collectionTargetElement.name3}` into the same library as its @Collection.',
+          element: annotatedElement,
+        );
+      }
+
       // Collect field type map
       for (final field in collectionTargetElement.allFields(
         hasFreezed: hasFreezed,
@@ -323,7 +342,20 @@ Current locations:
         if (field.isPublic && !field.hasId() && !field.isJsonIgnored()) {
           final fieldName = field.name3;
           if (fieldName != null) {
+            if (hasCustomToJsonHook(field)) {
+              throw InvalidGenerationSourceError(
+                'The field `${collectionTargetElement.name3}.$fieldName` uses '
+                '@JsonKey(toJson:), which cannot be reproduced for a '
+                'cross-library collection. Use a JsonConverter instead, or move '
+                'the model into the same library as its @Collection.',
+                element: annotatedElement,
+              );
+            }
+
             fieldTypeMap[fieldName] = field.type;
+
+            final converter = converterExpressionFor(field);
+            if (converter != null) fieldConverterMap[fieldName] = converter;
           }
         }
       }
@@ -366,6 +398,13 @@ Current locations:
         if (fieldType == null) {
           // Fallback for special fields like documentId, fieldPath
           return '((Object? x) => x)';
+        }
+
+        // A converter replaces the type-based encoding entirely, exactly as it
+        // does in the toJson json_serializable writes.
+        final converter = fieldConverterMap[field];
+        if (converter != null) {
+          return '((${fieldType.getDisplayString()} x) => $converter.toJson(x))';
         }
 
         return generatePerFieldToJsonCode(fieldType, field);
@@ -492,7 +531,7 @@ Current locations:
                 // For cross-library, use inline field name from @JsonKey or field name
                 // For same-library, use reference to generated FieldMap
                 field: isCrossLibrary
-                    ? "'${f.getJsonFieldName()}'"
+                    ? "'${f.getJsonFieldName(effectiveFieldRename)}'"
                     : "${generatedJsonTypePrefix}FieldMap['${f.name3}']!",
               ),
             )
@@ -896,12 +935,9 @@ extension on Element2 {
 
   /// Gets the JSON field name for this field element.
   ///
-  /// Returns the custom name from @JsonKey(name: '...') if present,
-  /// otherwise returns the field's original name.
-  ///
-  /// For Phase 1, we do NOT support @JsonSerializable(fieldRename: ...)
-  /// as that would require more complex parsing.
-  String getJsonFieldName() {
+  /// `@JsonKey(name: '...')` wins outright; otherwise [fieldRename] is applied
+  /// to the declared name, which is the order json_serializable uses.
+  String getJsonFieldName(FieldRename fieldRename) {
     const checker = TypeChecker.typeNamed(JsonKey);
     final jsonKeyAnnotation = checker.firstAnnotationOf(this);
 
@@ -912,8 +948,7 @@ extension on Element2 {
       }
     }
 
-    // Fall back to field name
-    return name3 ?? displayName;
+    return encodedFieldName(fieldRename, name3 ?? displayName);
   }
 }
 
@@ -956,6 +991,68 @@ String generateEnumMapCode(EnumElement enumElement) {
 
   return "const _firestoreEnumMap_$enumName = {\n${entries.join(',\n')},\n};";
 }
+
+/// Rebuilds the `const MyConverter()` expression for a [JsonConverter]
+/// annotation on [element], or null when there is none.
+///
+/// Mirrors json_serializable, which rebuilds the converter from its type and
+/// refuses any that takes constructor arguments rather than guessing.
+String? converterExpressionFor(Element2 element) {
+  for (final annotation in jsonConverterChecker.annotationsOf(element)) {
+    final type = annotation.type;
+    final name = type?.element3?.name3;
+    if (name == null) continue;
+
+    final reviver = ConstantReader(annotation).revive();
+    if (reviver.namedArguments.isNotEmpty || reviver.positionalArguments.isNotEmpty) {
+      throw InvalidGenerationSourceError(
+        'Cross-library collections cannot rebuild the converter `$name` because '
+        'it takes constructor arguments. Give it a const zero-argument '
+        'constructor, or move the model into the same library as its @Collection.',
+        element: element,
+      );
+    }
+
+    return reviver.accessor.isEmpty ? 'const $name()' : 'const $name.${reviver.accessor}()';
+  }
+
+  return null;
+}
+
+/// Whether [element] carries a `@JsonKey(toJson:)` hook.
+///
+/// The hook can be any function, so there is nothing reliable to rebuild here.
+bool hasCustomToJsonHook(Element2 element) {
+  final jsonKey = jsonKeyChecker.firstAnnotationOf(element);
+  final toJson = jsonKey?.getField('toJson');
+
+  return toJson != null && !toJson.isNull;
+}
+
+/// Reads `@JsonSerializable(fieldRename:)` off [element], or null when the
+/// class leaves it unset and the builder's default applies.
+FieldRename? _classFieldRename(ClassElement2 element) {
+  final annotation = jsonSerializableChecker.firstAnnotationOf(element);
+  final rename = annotation?.getField('fieldRename');
+  if (rename == null || rename.isNull) return null;
+
+  final index = rename.getField('index')?.toIntValue();
+  if (index == null || index < 0 || index >= FieldRename.values.length) return null;
+
+  return FieldRename.values[index];
+}
+
+/// Mirror of json_serializable's `encodedFieldName`.
+///
+/// It uses source_helper's case extensions, so the two agree on the awkward
+/// inputs — acronyms, digits, leading underscores — without reimplementing them.
+String encodedFieldName(FieldRename fieldRename, String declaredName) => switch (fieldRename) {
+  FieldRename.none => declaredName,
+  FieldRename.snake => declaredName.snake,
+  FieldRename.screamingSnake => declaredName.snake.toUpperCase(),
+  FieldRename.kebab => declaredName.kebab,
+  FieldRename.pascal => declaredName.pascal,
+};
 
 /// Returns how json_serializable natively encodes [type], or null when [type]
 /// needs no rewriting.

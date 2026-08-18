@@ -1,6 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 
 import 'address.dart';
+import 'converters.dart';
 
 part 'resident.g.dart';
 
@@ -22,6 +23,8 @@ class Resident {
     this.contactAddresses,
     this.visitDurations,
     this.milestones,
+    this.nickname,
+    this.alias,
   });
 
   factory Resident.fromJson(Map<String, dynamic> json) => _$ResidentFromJson(json);
@@ -51,6 +54,15 @@ class Resident {
   /// element/value conversion rather than being written as-is.
   final List<Duration>? visitDurations;
   final Map<String, DateTime>? milestones;
+
+  /// Carries a field-level JsonConverter. json_serializable routes this through
+  /// UpperCaseSerializer; the collection must do the same or the two disagree.
+  @UpperCaseSerializer()
+  final String? nickname;
+
+  /// Same converter, referenced as a const variable rather than constructed.
+  @upperCaseSerializer
+  final String? alias;
 
   Map<String, dynamic> toJson() => _$ResidentToJson(this);
 }

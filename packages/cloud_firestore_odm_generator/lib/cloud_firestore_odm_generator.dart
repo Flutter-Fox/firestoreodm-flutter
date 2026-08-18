@@ -12,7 +12,7 @@ import 'src/validator_generator.dart';
 Builder firebase(BuilderOptions options) {
   return SharedPartBuilder(
     [
-      CollectionGenerator(),
+      CollectionGenerator(fieldRename: parseFieldRenameOption(options.config['field_rename'])),
       ValidatorGenerator(),
     ],
     'firebase',

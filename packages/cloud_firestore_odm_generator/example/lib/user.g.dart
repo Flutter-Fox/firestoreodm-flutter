@@ -1234,6 +1234,8 @@ abstract class ResidentDocumentReference
     FieldValue contactAddressesFieldValue,
     FieldValue visitDurationsFieldValue,
     FieldValue milestonesFieldValue,
+    FieldValue nicknameFieldValue,
+    FieldValue aliasFieldValue,
   });
 
   /// Writes to the document using the transaction API.
@@ -1262,6 +1264,8 @@ abstract class ResidentDocumentReference
     FieldValue contactAddressesFieldValue,
     FieldValue visitDurationsFieldValue,
     FieldValue milestonesFieldValue,
+    FieldValue nicknameFieldValue,
+    FieldValue aliasFieldValue,
   });
 
   /// Writes to the document using the batch API.
@@ -1290,6 +1294,8 @@ abstract class ResidentDocumentReference
     FieldValue contactAddressesFieldValue,
     FieldValue visitDurationsFieldValue,
     FieldValue milestonesFieldValue,
+    FieldValue nicknameFieldValue,
+    FieldValue aliasFieldValue,
   });
 
   /// Updates data on the document. Data will be merged with any existing
@@ -1327,6 +1333,10 @@ abstract class ResidentDocumentReference
     FieldValue visitDurationsFieldValue,
     Map<String, DateTime>? milestones,
     FieldValue milestonesFieldValue,
+    String? nickname,
+    FieldValue nicknameFieldValue,
+    String? alias,
+    FieldValue aliasFieldValue,
   });
 
   /// Updates fields in the current document using the transaction API.
@@ -1364,6 +1374,10 @@ abstract class ResidentDocumentReference
     FieldValue visitDurationsFieldValue,
     Map<String, DateTime>? milestones,
     FieldValue milestonesFieldValue,
+    String? nickname,
+    FieldValue nicknameFieldValue,
+    String? alias,
+    FieldValue aliasFieldValue,
   });
 
   /// Updates fields in the current document using the batch API.
@@ -1401,6 +1415,10 @@ abstract class ResidentDocumentReference
     FieldValue visitDurationsFieldValue,
     Map<String, DateTime>? milestones,
     FieldValue milestonesFieldValue,
+    String? nickname,
+    FieldValue nicknameFieldValue,
+    String? alias,
+    FieldValue aliasFieldValue,
   });
 }
 
@@ -1450,6 +1468,8 @@ class _$ResidentDocumentReference
     FieldValue? contactAddressesFieldValue,
     FieldValue? visitDurationsFieldValue,
     FieldValue? milestonesFieldValue,
+    FieldValue? nicknameFieldValue,
+    FieldValue? aliasFieldValue,
   }) async {
     final json = {
       ...model.toJson(),
@@ -1469,23 +1489,27 @@ class _$ResidentDocumentReference
 
       if (zipFieldValue != null) 'zip': zipFieldValue,
 
-      if (admittedAtFieldValue != null) 'admittedAt': admittedAtFieldValue,
+      if (admittedAtFieldValue != null) 'admitted_at': admittedAtFieldValue,
 
       if (stayDurationFieldValue != null)
-        'stayDuration': stayDurationFieldValue,
+        'stay_duration': stayDurationFieldValue,
 
-      if (homeAddressFieldValue != null) 'homeAddress': homeAddressFieldValue,
+      if (homeAddressFieldValue != null) 'home_address': homeAddressFieldValue,
 
       if (previousAddressesFieldValue != null)
-        'previousAddresses': previousAddressesFieldValue,
+        'previous_addresses': previousAddressesFieldValue,
 
       if (contactAddressesFieldValue != null)
-        'contactAddresses': contactAddressesFieldValue,
+        'contact_addresses': contactAddressesFieldValue,
 
       if (visitDurationsFieldValue != null)
-        'visitDurations': visitDurationsFieldValue,
+        'visit_durations': visitDurationsFieldValue,
 
       if (milestonesFieldValue != null) 'milestones': milestonesFieldValue,
+
+      if (nicknameFieldValue != null) 'nickname': nicknameFieldValue,
+
+      if (aliasFieldValue != null) 'alias': aliasFieldValue,
     };
 
     final castedReference = reference.withConverter<Map<String, dynamic>>(
@@ -1514,6 +1538,8 @@ class _$ResidentDocumentReference
     FieldValue? contactAddressesFieldValue,
     FieldValue? visitDurationsFieldValue,
     FieldValue? milestonesFieldValue,
+    FieldValue? nicknameFieldValue,
+    FieldValue? aliasFieldValue,
   }) {
     final json = {
       ...model.toJson(),
@@ -1533,23 +1559,27 @@ class _$ResidentDocumentReference
 
       if (zipFieldValue != null) 'zip': zipFieldValue,
 
-      if (admittedAtFieldValue != null) 'admittedAt': admittedAtFieldValue,
+      if (admittedAtFieldValue != null) 'admitted_at': admittedAtFieldValue,
 
       if (stayDurationFieldValue != null)
-        'stayDuration': stayDurationFieldValue,
+        'stay_duration': stayDurationFieldValue,
 
-      if (homeAddressFieldValue != null) 'homeAddress': homeAddressFieldValue,
+      if (homeAddressFieldValue != null) 'home_address': homeAddressFieldValue,
 
       if (previousAddressesFieldValue != null)
-        'previousAddresses': previousAddressesFieldValue,
+        'previous_addresses': previousAddressesFieldValue,
 
       if (contactAddressesFieldValue != null)
-        'contactAddresses': contactAddressesFieldValue,
+        'contact_addresses': contactAddressesFieldValue,
 
       if (visitDurationsFieldValue != null)
-        'visitDurations': visitDurationsFieldValue,
+        'visit_durations': visitDurationsFieldValue,
 
       if (milestonesFieldValue != null) 'milestones': milestonesFieldValue,
+
+      if (nicknameFieldValue != null) 'nickname': nicknameFieldValue,
+
+      if (aliasFieldValue != null) 'alias': aliasFieldValue,
     };
 
     transaction.set(reference, json, options);
@@ -1574,6 +1604,8 @@ class _$ResidentDocumentReference
     FieldValue? contactAddressesFieldValue,
     FieldValue? visitDurationsFieldValue,
     FieldValue? milestonesFieldValue,
+    FieldValue? nicknameFieldValue,
+    FieldValue? aliasFieldValue,
   }) {
     final json = {
       ...model.toJson(),
@@ -1593,23 +1625,27 @@ class _$ResidentDocumentReference
 
       if (zipFieldValue != null) 'zip': zipFieldValue,
 
-      if (admittedAtFieldValue != null) 'admittedAt': admittedAtFieldValue,
+      if (admittedAtFieldValue != null) 'admitted_at': admittedAtFieldValue,
 
       if (stayDurationFieldValue != null)
-        'stayDuration': stayDurationFieldValue,
+        'stay_duration': stayDurationFieldValue,
 
-      if (homeAddressFieldValue != null) 'homeAddress': homeAddressFieldValue,
+      if (homeAddressFieldValue != null) 'home_address': homeAddressFieldValue,
 
       if (previousAddressesFieldValue != null)
-        'previousAddresses': previousAddressesFieldValue,
+        'previous_addresses': previousAddressesFieldValue,
 
       if (contactAddressesFieldValue != null)
-        'contactAddresses': contactAddressesFieldValue,
+        'contact_addresses': contactAddressesFieldValue,
 
       if (visitDurationsFieldValue != null)
-        'visitDurations': visitDurationsFieldValue,
+        'visit_durations': visitDurationsFieldValue,
 
       if (milestonesFieldValue != null) 'milestones': milestonesFieldValue,
+
+      if (nicknameFieldValue != null) 'nickname': nicknameFieldValue,
+
+      if (aliasFieldValue != null) 'alias': aliasFieldValue,
     };
 
     batch.set(reference, json, options);
@@ -1646,6 +1682,10 @@ class _$ResidentDocumentReference
     FieldValue? visitDurationsFieldValue,
     Object? milestones = _sentinel,
     FieldValue? milestonesFieldValue,
+    Object? nickname = _sentinel,
+    FieldValue? nicknameFieldValue,
+    Object? alias = _sentinel,
+    FieldValue? aliasFieldValue,
   }) async {
     assert(
       id == _sentinel || idFieldValue == null,
@@ -1707,6 +1747,14 @@ class _$ResidentDocumentReference
       milestones == _sentinel || milestonesFieldValue == null,
       "Cannot specify both milestones and milestonesFieldValue",
     );
+    assert(
+      nickname == _sentinel || nicknameFieldValue == null,
+      "Cannot specify both nickname and nicknameFieldValue",
+    );
+    assert(
+      alias == _sentinel || aliasFieldValue == null,
+      "Cannot specify both alias and aliasFieldValue",
+    );
     final json = {
       if (id != _sentinel) 'id': ((Object? x) => x)(id as String?),
 
@@ -1742,47 +1790,47 @@ class _$ResidentDocumentReference
       if (zipFieldValue != null) 'zip': zipFieldValue,
 
       if (admittedAt != _sentinel)
-        'admittedAt': ((DateTime? x) =>
+        'admitted_at': ((DateTime? x) =>
             x?.toIso8601String())(admittedAt as DateTime?),
 
-      if (admittedAtFieldValue != null) 'admittedAt': admittedAtFieldValue,
+      if (admittedAtFieldValue != null) 'admitted_at': admittedAtFieldValue,
 
       if (stayDuration != _sentinel)
-        'stayDuration': ((Duration? x) =>
+        'stay_duration': ((Duration? x) =>
             x?.inMicroseconds)(stayDuration as Duration?),
 
       if (stayDurationFieldValue != null)
-        'stayDuration': stayDurationFieldValue,
+        'stay_duration': stayDurationFieldValue,
 
       if (homeAddress != _sentinel)
-        'homeAddress': ((Address? x) => x?.toJson())(homeAddress as Address?),
+        'home_address': ((Address? x) => x?.toJson())(homeAddress as Address?),
 
-      if (homeAddressFieldValue != null) 'homeAddress': homeAddressFieldValue,
+      if (homeAddressFieldValue != null) 'home_address': homeAddressFieldValue,
 
       if (previousAddresses != _sentinel)
-        'previousAddresses': ((List<Address>? x) => (x as List?)
+        'previous_addresses': ((List<Address>? x) => (x as List?)
             ?.map((e) => e.toJson())
             .toList())(previousAddresses as List<Address>?),
 
       if (previousAddressesFieldValue != null)
-        'previousAddresses': previousAddressesFieldValue,
+        'previous_addresses': previousAddressesFieldValue,
 
       if (contactAddresses != _sentinel)
-        'contactAddresses': ((Map<String, Address>? x) =>
+        'contact_addresses': ((Map<String, Address>? x) =>
             (x as Map<String, dynamic>?)?.map(
               (k, v) => MapEntry(k, v.toJson()),
             ))(contactAddresses as Map<String, Address>?),
 
       if (contactAddressesFieldValue != null)
-        'contactAddresses': contactAddressesFieldValue,
+        'contact_addresses': contactAddressesFieldValue,
 
       if (visitDurations != _sentinel)
-        'visitDurations': ((List<Duration>? x) => (x as List?)
+        'visit_durations': ((List<Duration>? x) => (x as List?)
             ?.map((e) => e.inMicroseconds)
             .toList())(visitDurations as List<Duration>?),
 
       if (visitDurationsFieldValue != null)
-        'visitDurations': visitDurationsFieldValue,
+        'visit_durations': visitDurationsFieldValue,
 
       if (milestones != _sentinel)
         'milestones': ((Map<String, DateTime>? x) =>
@@ -1791,6 +1839,18 @@ class _$ResidentDocumentReference
             ))(milestones as Map<String, DateTime>?),
 
       if (milestonesFieldValue != null) 'milestones': milestonesFieldValue,
+
+      if (nickname != _sentinel)
+        'nickname': ((String? x) =>
+            const UpperCaseSerializer().toJson(x))(nickname as String?),
+
+      if (nicknameFieldValue != null) 'nickname': nicknameFieldValue,
+
+      if (alias != _sentinel)
+        'alias': ((String? x) =>
+            const UpperCaseSerializer().toJson(x))(alias as String?),
+
+      if (aliasFieldValue != null) 'alias': aliasFieldValue,
     };
 
     return reference.update(json);
@@ -1828,6 +1888,10 @@ class _$ResidentDocumentReference
     FieldValue? visitDurationsFieldValue,
     Object? milestones = _sentinel,
     FieldValue? milestonesFieldValue,
+    Object? nickname = _sentinel,
+    FieldValue? nicknameFieldValue,
+    Object? alias = _sentinel,
+    FieldValue? aliasFieldValue,
   }) {
     assert(
       id == _sentinel || idFieldValue == null,
@@ -1889,6 +1953,14 @@ class _$ResidentDocumentReference
       milestones == _sentinel || milestonesFieldValue == null,
       "Cannot specify both milestones and milestonesFieldValue",
     );
+    assert(
+      nickname == _sentinel || nicknameFieldValue == null,
+      "Cannot specify both nickname and nicknameFieldValue",
+    );
+    assert(
+      alias == _sentinel || aliasFieldValue == null,
+      "Cannot specify both alias and aliasFieldValue",
+    );
     final json = {
       if (id != _sentinel) 'id': ((Object? x) => x)(id as String?),
 
@@ -1924,47 +1996,47 @@ class _$ResidentDocumentReference
       if (zipFieldValue != null) 'zip': zipFieldValue,
 
       if (admittedAt != _sentinel)
-        'admittedAt': ((DateTime? x) =>
+        'admitted_at': ((DateTime? x) =>
             x?.toIso8601String())(admittedAt as DateTime?),
 
-      if (admittedAtFieldValue != null) 'admittedAt': admittedAtFieldValue,
+      if (admittedAtFieldValue != null) 'admitted_at': admittedAtFieldValue,
 
       if (stayDuration != _sentinel)
-        'stayDuration': ((Duration? x) =>
+        'stay_duration': ((Duration? x) =>
             x?.inMicroseconds)(stayDuration as Duration?),
 
       if (stayDurationFieldValue != null)
-        'stayDuration': stayDurationFieldValue,
+        'stay_duration': stayDurationFieldValue,
 
       if (homeAddress != _sentinel)
-        'homeAddress': ((Address? x) => x?.toJson())(homeAddress as Address?),
+        'home_address': ((Address? x) => x?.toJson())(homeAddress as Address?),
 
-      if (homeAddressFieldValue != null) 'homeAddress': homeAddressFieldValue,
+      if (homeAddressFieldValue != null) 'home_address': homeAddressFieldValue,
 
       if (previousAddresses != _sentinel)
-        'previousAddresses': ((List<Address>? x) => (x as List?)
+        'previous_addresses': ((List<Address>? x) => (x as List?)
             ?.map((e) => e.toJson())
             .toList())(previousAddresses as List<Address>?),
 
       if (previousAddressesFieldValue != null)
-        'previousAddresses': previousAddressesFieldValue,
+        'previous_addresses': previousAddressesFieldValue,
 
       if (contactAddresses != _sentinel)
-        'contactAddresses': ((Map<String, Address>? x) =>
+        'contact_addresses': ((Map<String, Address>? x) =>
             (x as Map<String, dynamic>?)?.map(
               (k, v) => MapEntry(k, v.toJson()),
             ))(contactAddresses as Map<String, Address>?),
 
       if (contactAddressesFieldValue != null)
-        'contactAddresses': contactAddressesFieldValue,
+        'contact_addresses': contactAddressesFieldValue,
 
       if (visitDurations != _sentinel)
-        'visitDurations': ((List<Duration>? x) => (x as List?)
+        'visit_durations': ((List<Duration>? x) => (x as List?)
             ?.map((e) => e.inMicroseconds)
             .toList())(visitDurations as List<Duration>?),
 
       if (visitDurationsFieldValue != null)
-        'visitDurations': visitDurationsFieldValue,
+        'visit_durations': visitDurationsFieldValue,
 
       if (milestones != _sentinel)
         'milestones': ((Map<String, DateTime>? x) =>
@@ -1973,6 +2045,18 @@ class _$ResidentDocumentReference
             ))(milestones as Map<String, DateTime>?),
 
       if (milestonesFieldValue != null) 'milestones': milestonesFieldValue,
+
+      if (nickname != _sentinel)
+        'nickname': ((String? x) =>
+            const UpperCaseSerializer().toJson(x))(nickname as String?),
+
+      if (nicknameFieldValue != null) 'nickname': nicknameFieldValue,
+
+      if (alias != _sentinel)
+        'alias': ((String? x) =>
+            const UpperCaseSerializer().toJson(x))(alias as String?),
+
+      if (aliasFieldValue != null) 'alias': aliasFieldValue,
     };
 
     transaction.update(reference, json);
@@ -2010,6 +2094,10 @@ class _$ResidentDocumentReference
     FieldValue? visitDurationsFieldValue,
     Object? milestones = _sentinel,
     FieldValue? milestonesFieldValue,
+    Object? nickname = _sentinel,
+    FieldValue? nicknameFieldValue,
+    Object? alias = _sentinel,
+    FieldValue? aliasFieldValue,
   }) {
     assert(
       id == _sentinel || idFieldValue == null,
@@ -2071,6 +2159,14 @@ class _$ResidentDocumentReference
       milestones == _sentinel || milestonesFieldValue == null,
       "Cannot specify both milestones and milestonesFieldValue",
     );
+    assert(
+      nickname == _sentinel || nicknameFieldValue == null,
+      "Cannot specify both nickname and nicknameFieldValue",
+    );
+    assert(
+      alias == _sentinel || aliasFieldValue == null,
+      "Cannot specify both alias and aliasFieldValue",
+    );
     final json = {
       if (id != _sentinel) 'id': ((Object? x) => x)(id as String?),
 
@@ -2106,47 +2202,47 @@ class _$ResidentDocumentReference
       if (zipFieldValue != null) 'zip': zipFieldValue,
 
       if (admittedAt != _sentinel)
-        'admittedAt': ((DateTime? x) =>
+        'admitted_at': ((DateTime? x) =>
             x?.toIso8601String())(admittedAt as DateTime?),
 
-      if (admittedAtFieldValue != null) 'admittedAt': admittedAtFieldValue,
+      if (admittedAtFieldValue != null) 'admitted_at': admittedAtFieldValue,
 
       if (stayDuration != _sentinel)
-        'stayDuration': ((Duration? x) =>
+        'stay_duration': ((Duration? x) =>
             x?.inMicroseconds)(stayDuration as Duration?),
 
       if (stayDurationFieldValue != null)
-        'stayDuration': stayDurationFieldValue,
+        'stay_duration': stayDurationFieldValue,
 
       if (homeAddress != _sentinel)
-        'homeAddress': ((Address? x) => x?.toJson())(homeAddress as Address?),
+        'home_address': ((Address? x) => x?.toJson())(homeAddress as Address?),
 
-      if (homeAddressFieldValue != null) 'homeAddress': homeAddressFieldValue,
+      if (homeAddressFieldValue != null) 'home_address': homeAddressFieldValue,
 
       if (previousAddresses != _sentinel)
-        'previousAddresses': ((List<Address>? x) => (x as List?)
+        'previous_addresses': ((List<Address>? x) => (x as List?)
             ?.map((e) => e.toJson())
             .toList())(previousAddresses as List<Address>?),
 
       if (previousAddressesFieldValue != null)
-        'previousAddresses': previousAddressesFieldValue,
+        'previous_addresses': previousAddressesFieldValue,
 
       if (contactAddresses != _sentinel)
-        'contactAddresses': ((Map<String, Address>? x) =>
+        'contact_addresses': ((Map<String, Address>? x) =>
             (x as Map<String, dynamic>?)?.map(
               (k, v) => MapEntry(k, v.toJson()),
             ))(contactAddresses as Map<String, Address>?),
 
       if (contactAddressesFieldValue != null)
-        'contactAddresses': contactAddressesFieldValue,
+        'contact_addresses': contactAddressesFieldValue,
 
       if (visitDurations != _sentinel)
-        'visitDurations': ((List<Duration>? x) => (x as List?)
+        'visit_durations': ((List<Duration>? x) => (x as List?)
             ?.map((e) => e.inMicroseconds)
             .toList())(visitDurations as List<Duration>?),
 
       if (visitDurationsFieldValue != null)
-        'visitDurations': visitDurationsFieldValue,
+        'visit_durations': visitDurationsFieldValue,
 
       if (milestones != _sentinel)
         'milestones': ((Map<String, DateTime>? x) =>
@@ -2155,6 +2251,18 @@ class _$ResidentDocumentReference
             ))(milestones as Map<String, DateTime>?),
 
       if (milestonesFieldValue != null) 'milestones': milestonesFieldValue,
+
+      if (nickname != _sentinel)
+        'nickname': ((String? x) =>
+            const UpperCaseSerializer().toJson(x))(nickname as String?),
+
+      if (nicknameFieldValue != null) 'nickname': nicknameFieldValue,
+
+      if (alias != _sentinel)
+        'alias': ((String? x) =>
+            const UpperCaseSerializer().toJson(x))(alias as String?),
+
+      if (aliasFieldValue != null) 'alias': aliasFieldValue,
     };
 
     batch.update(reference, json);
@@ -2404,6 +2512,30 @@ abstract class ResidentQuery
     bool? isNull,
   });
 
+  ResidentQuery whereNickname({
+    String? isEqualTo,
+    String? isNotEqualTo,
+    String? isLessThan,
+    String? isLessThanOrEqualTo,
+    String? isGreaterThan,
+    String? isGreaterThanOrEqualTo,
+    List<String?>? whereIn,
+    List<String?>? whereNotIn,
+    bool? isNull,
+  });
+
+  ResidentQuery whereAlias({
+    String? isEqualTo,
+    String? isNotEqualTo,
+    String? isLessThan,
+    String? isLessThanOrEqualTo,
+    String? isGreaterThan,
+    String? isGreaterThanOrEqualTo,
+    List<String?>? whereIn,
+    List<String?>? whereNotIn,
+    bool? isNull,
+  });
+
   /// Perform an order query based on a [FieldPath].
   ///
   /// This method is considered unsafe as it does check that the field path
@@ -2623,6 +2755,30 @@ abstract class ResidentQuery
     Map<String, DateTime>? startAfter,
     Map<String, DateTime>? endAt,
     Map<String, DateTime>? endBefore,
+    ResidentDocumentSnapshot? startAtDocument,
+    ResidentDocumentSnapshot? endAtDocument,
+    ResidentDocumentSnapshot? endBeforeDocument,
+    ResidentDocumentSnapshot? startAfterDocument,
+  });
+
+  ResidentQuery orderByNickname({
+    bool descending = false,
+    String? startAt,
+    String? startAfter,
+    String? endAt,
+    String? endBefore,
+    ResidentDocumentSnapshot? startAtDocument,
+    ResidentDocumentSnapshot? endAtDocument,
+    ResidentDocumentSnapshot? endBeforeDocument,
+    ResidentDocumentSnapshot? startAfterDocument,
+  });
+
+  ResidentQuery orderByAlias({
+    bool descending = false,
+    String? startAt,
+    String? startAfter,
+    String? endAt,
+    String? endBefore,
     ResidentDocumentSnapshot? startAtDocument,
     ResidentDocumentSnapshot? endAtDocument,
     ResidentDocumentSnapshot? endBeforeDocument,
@@ -3119,7 +3275,7 @@ class _$ResidentQuery extends QueryReference<Resident, ResidentQuerySnapshot>
     return _$ResidentQuery(
       _collection,
       $referenceWithoutCursor: $referenceWithoutCursor.where(
-        'admittedAt',
+        'admitted_at',
         isEqualTo: isEqualTo != _sentinel
             ? ((DateTime? x) => x?.toIso8601String())(isEqualTo as DateTime?)
             : null,
@@ -3171,7 +3327,7 @@ class _$ResidentQuery extends QueryReference<Resident, ResidentQuerySnapshot>
     return _$ResidentQuery(
       _collection,
       $referenceWithoutCursor: $referenceWithoutCursor.where(
-        'stayDuration',
+        'stay_duration',
         isEqualTo: isEqualTo != _sentinel
             ? ((Duration? x) => x?.inMicroseconds)(isEqualTo as Duration?)
             : null,
@@ -3220,7 +3376,7 @@ class _$ResidentQuery extends QueryReference<Resident, ResidentQuerySnapshot>
     return _$ResidentQuery(
       _collection,
       $referenceWithoutCursor: $referenceWithoutCursor.where(
-        'homeAddress',
+        'home_address',
         isEqualTo: isEqualTo != _sentinel
             ? ((Address? x) => x?.toJson())(isEqualTo as Address?)
             : null,
@@ -3265,7 +3421,7 @@ class _$ResidentQuery extends QueryReference<Resident, ResidentQuerySnapshot>
     return _$ResidentQuery(
       _collection,
       $referenceWithoutCursor: $referenceWithoutCursor.where(
-        'previousAddresses',
+        'previous_addresses',
         isEqualTo: isEqualTo != _sentinel
             ? ((List<Address>? x) => (x as List?)
                   ?.map((e) => e.toJson())
@@ -3333,7 +3489,7 @@ class _$ResidentQuery extends QueryReference<Resident, ResidentQuerySnapshot>
     return _$ResidentQuery(
       _collection,
       $referenceWithoutCursor: $referenceWithoutCursor.where(
-        'contactAddresses',
+        'contact_addresses',
         isEqualTo: isEqualTo != _sentinel
             ? ((Map<String, Address>? x) => (x as Map<String, dynamic>?)?.map(
                 (k, v) => MapEntry(k, v.toJson()),
@@ -3396,7 +3552,7 @@ class _$ResidentQuery extends QueryReference<Resident, ResidentQuerySnapshot>
     return _$ResidentQuery(
       _collection,
       $referenceWithoutCursor: $referenceWithoutCursor.where(
-        'visitDurations',
+        'visit_durations',
         isEqualTo: isEqualTo != _sentinel
             ? ((List<Duration>? x) => (x as List?)
                   ?.map((e) => e.inMicroseconds)
@@ -3502,6 +3658,124 @@ class _$ResidentQuery extends QueryReference<Resident, ResidentQuerySnapshot>
         whereNotIn: whereNotIn?.map(
           (e) => ((Map<String, DateTime>? x) => (x as Map<String, dynamic>?)
               ?.map((k, v) => MapEntry(k, v.toIso8601String())))(e),
+        ),
+        isNull:
+            isNull ??
+            (isEqualTo == null ? false : null) ??
+            (isNotEqualTo == null ? true : null),
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  ResidentQuery whereNickname({
+    Object? isEqualTo = _sentinel,
+    Object? isNotEqualTo = _sentinel,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    List<String?>? whereIn,
+    List<String?>? whereNotIn,
+    bool? isNull,
+  }) {
+    return _$ResidentQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        'nickname',
+        isEqualTo: isEqualTo != _sentinel
+            ? ((String? x) =>
+                  const UpperCaseSerializer().toJson(x))(isEqualTo as String?)
+            : null,
+        isNotEqualTo: isNotEqualTo != _sentinel
+            ? ((String? x) => const UpperCaseSerializer().toJson(x))(
+                isNotEqualTo as String?,
+              )
+            : null,
+        isLessThan: isLessThan != null
+            ? ((String? x) =>
+                  const UpperCaseSerializer().toJson(x))(isLessThan as String?)
+            : null,
+        isLessThanOrEqualTo: isLessThanOrEqualTo != null
+            ? ((String? x) => const UpperCaseSerializer().toJson(x))(
+                isLessThanOrEqualTo as String?,
+              )
+            : null,
+        isGreaterThan: isGreaterThan != null
+            ? ((String? x) => const UpperCaseSerializer().toJson(x))(
+                isGreaterThan as String?,
+              )
+            : null,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo != null
+            ? ((String? x) => const UpperCaseSerializer().toJson(x))(
+                isGreaterThanOrEqualTo as String?,
+              )
+            : null,
+        whereIn: whereIn?.map(
+          (e) => ((String? x) => const UpperCaseSerializer().toJson(x))(e),
+        ),
+        whereNotIn: whereNotIn?.map(
+          (e) => ((String? x) => const UpperCaseSerializer().toJson(x))(e),
+        ),
+        isNull:
+            isNull ??
+            (isEqualTo == null ? false : null) ??
+            (isNotEqualTo == null ? true : null),
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  @override
+  ResidentQuery whereAlias({
+    Object? isEqualTo = _sentinel,
+    Object? isNotEqualTo = _sentinel,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    List<String?>? whereIn,
+    List<String?>? whereNotIn,
+    bool? isNull,
+  }) {
+    return _$ResidentQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        'alias',
+        isEqualTo: isEqualTo != _sentinel
+            ? ((String? x) =>
+                  const UpperCaseSerializer().toJson(x))(isEqualTo as String?)
+            : null,
+        isNotEqualTo: isNotEqualTo != _sentinel
+            ? ((String? x) => const UpperCaseSerializer().toJson(x))(
+                isNotEqualTo as String?,
+              )
+            : null,
+        isLessThan: isLessThan != null
+            ? ((String? x) =>
+                  const UpperCaseSerializer().toJson(x))(isLessThan as String?)
+            : null,
+        isLessThanOrEqualTo: isLessThanOrEqualTo != null
+            ? ((String? x) => const UpperCaseSerializer().toJson(x))(
+                isLessThanOrEqualTo as String?,
+              )
+            : null,
+        isGreaterThan: isGreaterThan != null
+            ? ((String? x) => const UpperCaseSerializer().toJson(x))(
+                isGreaterThan as String?,
+              )
+            : null,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo != null
+            ? ((String? x) => const UpperCaseSerializer().toJson(x))(
+                isGreaterThanOrEqualTo as String?,
+              )
+            : null,
+        whereIn: whereIn?.map(
+          (e) => ((String? x) => const UpperCaseSerializer().toJson(x))(e),
+        ),
+        whereNotIn: whereNotIn?.map(
+          (e) => ((String? x) => const UpperCaseSerializer().toJson(x))(e),
         ),
         isNull:
             isNull ??
@@ -4273,7 +4547,7 @@ class _$ResidentQuery extends QueryReference<Resident, ResidentQuerySnapshot>
     ResidentDocumentSnapshot? startAfterDocument,
   }) {
     final query = $referenceWithoutCursor.orderBy(
-      'admittedAt',
+      'admitted_at',
       descending: descending,
     );
     var queryCursor = $queryCursor;
@@ -4348,7 +4622,7 @@ class _$ResidentQuery extends QueryReference<Resident, ResidentQuerySnapshot>
     ResidentDocumentSnapshot? startAfterDocument,
   }) {
     final query = $referenceWithoutCursor.orderBy(
-      'stayDuration',
+      'stay_duration',
       descending: descending,
     );
     var queryCursor = $queryCursor;
@@ -4423,7 +4697,7 @@ class _$ResidentQuery extends QueryReference<Resident, ResidentQuerySnapshot>
     ResidentDocumentSnapshot? startAfterDocument,
   }) {
     final query = $referenceWithoutCursor.orderBy(
-      'homeAddress',
+      'home_address',
       descending: descending,
     );
     var queryCursor = $queryCursor;
@@ -4498,7 +4772,7 @@ class _$ResidentQuery extends QueryReference<Resident, ResidentQuerySnapshot>
     ResidentDocumentSnapshot? startAfterDocument,
   }) {
     final query = $referenceWithoutCursor.orderBy(
-      'previousAddresses',
+      'previous_addresses',
       descending: descending,
     );
     var queryCursor = $queryCursor;
@@ -4573,7 +4847,7 @@ class _$ResidentQuery extends QueryReference<Resident, ResidentQuerySnapshot>
     ResidentDocumentSnapshot? startAfterDocument,
   }) {
     final query = $referenceWithoutCursor.orderBy(
-      'contactAddresses',
+      'contact_addresses',
       descending: descending,
     );
     var queryCursor = $queryCursor;
@@ -4648,7 +4922,7 @@ class _$ResidentQuery extends QueryReference<Resident, ResidentQuerySnapshot>
     ResidentDocumentSnapshot? startAfterDocument,
   }) {
     final query = $referenceWithoutCursor.orderBy(
-      'visitDurations',
+      'visit_durations',
       descending: descending,
     );
     var queryCursor = $queryCursor;
@@ -4724,6 +4998,156 @@ class _$ResidentQuery extends QueryReference<Resident, ResidentQuerySnapshot>
   }) {
     final query = $referenceWithoutCursor.orderBy(
       'milestones',
+      descending: descending,
+    );
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$ResidentQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  @override
+  ResidentQuery orderByNickname({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    ResidentDocumentSnapshot? startAtDocument,
+    ResidentDocumentSnapshot? endAtDocument,
+    ResidentDocumentSnapshot? endBeforeDocument,
+    ResidentDocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+      'nickname',
+      descending: descending,
+    );
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$ResidentQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  @override
+  ResidentQuery orderByAlias({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    ResidentDocumentSnapshot? startAtDocument,
+    ResidentDocumentSnapshot? endAtDocument,
+    ResidentDocumentSnapshot? endBeforeDocument,
+    ResidentDocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+      'alias',
       descending: descending,
     );
     var queryCursor = $queryCursor;
@@ -5095,10 +5519,10 @@ class _$VisitorDocumentReference
       ...model.toJson(),
       if (idFieldValue != null) 'id': idFieldValue,
 
-      if (homeAddressFieldValue != null) 'homeAddress': homeAddressFieldValue,
+      if (homeAddressFieldValue != null) 'home_address': homeAddressFieldValue,
 
       if (previousAddressesFieldValue != null)
-        'previousAddresses': previousAddressesFieldValue,
+        'previous_addresses': previousAddressesFieldValue,
     };
 
     final castedReference = reference.withConverter<Map<String, dynamic>>(
@@ -5120,10 +5544,10 @@ class _$VisitorDocumentReference
       ...model.toJson(),
       if (idFieldValue != null) 'id': idFieldValue,
 
-      if (homeAddressFieldValue != null) 'homeAddress': homeAddressFieldValue,
+      if (homeAddressFieldValue != null) 'home_address': homeAddressFieldValue,
 
       if (previousAddressesFieldValue != null)
-        'previousAddresses': previousAddressesFieldValue,
+        'previous_addresses': previousAddressesFieldValue,
     };
 
     transaction.set(reference, json, options);
@@ -5141,10 +5565,10 @@ class _$VisitorDocumentReference
       ...model.toJson(),
       if (idFieldValue != null) 'id': idFieldValue,
 
-      if (homeAddressFieldValue != null) 'homeAddress': homeAddressFieldValue,
+      if (homeAddressFieldValue != null) 'home_address': homeAddressFieldValue,
 
       if (previousAddressesFieldValue != null)
-        'previousAddresses': previousAddressesFieldValue,
+        'previous_addresses': previousAddressesFieldValue,
     };
 
     batch.set(reference, json, options);
@@ -5176,17 +5600,17 @@ class _$VisitorDocumentReference
       if (idFieldValue != null) 'id': idFieldValue,
 
       if (homeAddress != _sentinel)
-        'homeAddress': ((Address? x) => x?.toJson())(homeAddress as Address?),
+        'home_address': ((Address? x) => x?.toJson())(homeAddress as Address?),
 
-      if (homeAddressFieldValue != null) 'homeAddress': homeAddressFieldValue,
+      if (homeAddressFieldValue != null) 'home_address': homeAddressFieldValue,
 
       if (previousAddresses != _sentinel)
-        'previousAddresses': ((List<Address>? x) => (x as List?)
+        'previous_addresses': ((List<Address>? x) => (x as List?)
             ?.map((e) => e.toJson())
             .toList())(previousAddresses as List<Address>?),
 
       if (previousAddressesFieldValue != null)
-        'previousAddresses': previousAddressesFieldValue,
+        'previous_addresses': previousAddressesFieldValue,
     };
 
     return reference.update(json);
@@ -5219,17 +5643,17 @@ class _$VisitorDocumentReference
       if (idFieldValue != null) 'id': idFieldValue,
 
       if (homeAddress != _sentinel)
-        'homeAddress': ((Address? x) => x?.toJson())(homeAddress as Address?),
+        'home_address': ((Address? x) => x?.toJson())(homeAddress as Address?),
 
-      if (homeAddressFieldValue != null) 'homeAddress': homeAddressFieldValue,
+      if (homeAddressFieldValue != null) 'home_address': homeAddressFieldValue,
 
       if (previousAddresses != _sentinel)
-        'previousAddresses': ((List<Address>? x) => (x as List?)
+        'previous_addresses': ((List<Address>? x) => (x as List?)
             ?.map((e) => e.toJson())
             .toList())(previousAddresses as List<Address>?),
 
       if (previousAddressesFieldValue != null)
-        'previousAddresses': previousAddressesFieldValue,
+        'previous_addresses': previousAddressesFieldValue,
     };
 
     transaction.update(reference, json);
@@ -5262,17 +5686,17 @@ class _$VisitorDocumentReference
       if (idFieldValue != null) 'id': idFieldValue,
 
       if (homeAddress != _sentinel)
-        'homeAddress': ((Address? x) => x?.toJson())(homeAddress as Address?),
+        'home_address': ((Address? x) => x?.toJson())(homeAddress as Address?),
 
-      if (homeAddressFieldValue != null) 'homeAddress': homeAddressFieldValue,
+      if (homeAddressFieldValue != null) 'home_address': homeAddressFieldValue,
 
       if (previousAddresses != _sentinel)
-        'previousAddresses': ((List<Address>? x) => (x as List?)
+        'previous_addresses': ((List<Address>? x) => (x as List?)
             ?.map((e) => e.toJson())
             .toList())(previousAddresses as List<Address>?),
 
       if (previousAddressesFieldValue != null)
-        'previousAddresses': previousAddressesFieldValue,
+        'previous_addresses': previousAddressesFieldValue,
     };
 
     batch.update(reference, json);
@@ -5632,7 +6056,7 @@ class _$VisitorQuery extends QueryReference<Visitor, VisitorQuerySnapshot>
     return _$VisitorQuery(
       _collection,
       $referenceWithoutCursor: $referenceWithoutCursor.where(
-        'homeAddress',
+        'home_address',
         isEqualTo: isEqualTo != _sentinel
             ? ((Address? x) => x?.toJson())(isEqualTo as Address?)
             : null,
@@ -5677,7 +6101,7 @@ class _$VisitorQuery extends QueryReference<Visitor, VisitorQuerySnapshot>
     return _$VisitorQuery(
       _collection,
       $referenceWithoutCursor: $referenceWithoutCursor.where(
-        'previousAddresses',
+        'previous_addresses',
         isEqualTo: isEqualTo != _sentinel
             ? ((List<Address>? x) => (x as List?)
                   ?.map((e) => e.toJson())
@@ -5966,7 +6390,7 @@ class _$VisitorQuery extends QueryReference<Visitor, VisitorQuerySnapshot>
     VisitorDocumentSnapshot? startAfterDocument,
   }) {
     final query = $referenceWithoutCursor.orderBy(
-      'homeAddress',
+      'home_address',
       descending: descending,
     );
     var queryCursor = $queryCursor;
@@ -6041,7 +6465,7 @@ class _$VisitorQuery extends QueryReference<Visitor, VisitorQuerySnapshot>
     VisitorDocumentSnapshot? startAfterDocument,
   }) {
     final query = $referenceWithoutCursor.orderBy(
-      'previousAddresses',
+      'previous_addresses',
       descending: descending,
     );
     var queryCursor = $queryCursor;
